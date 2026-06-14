@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mano žaidimai</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0eef8;
+    --muted: #8a87a0;
+    --accent: #7c6af7;
+    --accent2: #a98fff;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  /* HEADER */
+  header {
+    padding: 3rem 2rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .site-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .site-sub {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    color: var(--muted);
+  }
+
+  /* CONTROLS */
+  .controls {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  input[type="search"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 1rem 0.65rem 2.75rem;
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input[type="search"]:focus { border-color: var(--accent); }
+  input[type="search"]::placeholder { color: var(--muted); }
+
+  .filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    padding: 0.45rem 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* COUNT */
+  .count {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* GRID */
+  .grid {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border2);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  }
+
+  .card-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+  }
+
+  .card-body { padding: 1rem 1.1rem 1.1rem; }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .badge-new { background: rgba(124,106,247,0.2); color: var(--accent2); }
+  .badge-hot { background: rgba(239,98,74,0.2); color: #f9886a; }
+  .badge-classic { background: rgba(80,220,160,0.15); color: #50dca0; }
+
+  /* EMPTY */
+  .empty {
+    display: none;
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--muted);
+  }
+  .empty .emoji { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+
+  /* THUMB COLORS */
+  .snake-bg   { background: linear-gradient(135deg,#0f3d26,#1a6b40); }
+  .tetris-bg  { background: linear-gradient(135deg,#0d1f4a,#1a3a8a); }
+  .puzzle-bg  { background: linear-gradient(135deg,#3a1a50,#6b2da0); }
+  .racing-bg  { background: linear-gradient(135deg,#4a1a00,#8a3a00); }
+  .card-game-bg { background: linear-gradient(135deg,#002a3a,#005a7a); }
+  .platformer-bg { background: linear-gradient(135deg,#2a1a00,#6a4400); }
+
+  @media (max-width: 600px) {
+    header, .controls, .count, .grid { padding-left: 1rem; padding-right: 1rem; }
+    .site-title { font-size: 1.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="site-title">Mano žaidimai</h1>
+  <p class="site-sub">6 žaidimai · HTML · veikia naršyklėje</p>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="search" id="search" placeholder="Ieškoti žaidimo..." autocomplete="off">
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" data-filter="visi">Visi</button>
+    <button class="filter-btn" data-filter="logika">Logika</button>
+    <button class="filter-btn" data-filter="veiksmas">Veiksmas</button>
+    <button class="filter-btn" data-filter="strategija">Strategija</button>
+    <button class="filter-btn" data-filter="lenktynės">Lenktynės</button>
+  </div>
+</div>
+
+<p class="count" id="count">Rodoma: 6 žaidimai</p>
+
+<div class="grid" id="grid">
+
+  <a class="card" href="zaidimai/snake/index.html" data-tags="veiksmas" data-title="snake">
+    <div class="card-thumb snake-bg">🐍</div>
+    <div class="card-body">
+      <div class="card-title">Snake</div>
+      <div class="card-desc">Valdyk gyvatę, rink taškus ir nebandyk susiliesti su savimi.</div>
+      <div class="card-footer">
+        <span class="tag">Veiksmas</span>
+        <span class="badge badge-hot">🔥 Populiarus</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="zaidimai/tetris/index.html" data-tags="logika" data-title="tetris">
+    <div class="card-thumb tetris-bg">🟦</div>
+    <div class="card-body">
+      <div class="card-title">Tetris</div>
+      <div class="card-desc">Sudėliok krintančias figūras ir valyk eiles kiek galima greičiau.</div>
+      <div class="card-footer">
+        <span class="tag">Logika</span>
+        <span class="badge badge-classic">⭐ Klasika</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="zaidimai/puzzle/index.html" data-tags="logika strategija" data-title="dėlionė puzzle">
+    <div class="card-thumb puzzle-bg">🧩</div>
+    <div class="card-body">
+      <div class="card-title">Dėlionė</div>
+      <div class="card-desc">Sudėk paveikslėlio gabalėlius į vietą kuo mažiau ėjimų.</div>
+      <div class="card-footer">
+        <span class="tag">Logika</span>
+        <span class="badge badge-new">✨ Naujas</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="zaidimai/racing/index.html" data-tags="lenktynės veiksmas" data-title="lenktynės racing">
+    <div class="card-thumb racing-bg">🏎️</div>
+    <div class="card-body">
+      <div class="card-title">Lenktynės</div>
+      <div class="card-desc">Lenktyniaukite trasoje, venk kliūčių ir pasiekk finišą pirmas.</div>
+      <div class="card-footer">
+        <span class="tag">Lenktynės</span>
+        <span class="badge badge-hot">🔥 Populiarus</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="zaidimai/korteles/index.html" data-tags="strategija logika" data-title="kortelės kortų žaidimas">
+    <div class="card-thumb card-game-bg">🃏</div>
+    <div class="card-body">
+      <div class="card-title">Kortelių žaidimas</div>
+      <div class="card-desc">Susirask visas poras ir laimi. Lavina atmintį ir dėmesį.</div>
+      <div class="card-footer">
+        <span class="tag">Strategija</span>
+        <span class="badge badge-new">✨ Naujas</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="zaidimai/platformer/index.html" data-tags="veiksmas" data-title="platformer šuoliai">
+    <div class="card-thumb platformer-bg">🦸</div>
+    <div class="card-body">
+      <div class="card-title">Platformer</div>
+      <div class="card-desc">Šokinėk per platformas, rink žvaigždes ir pasiekk lygį pabaigą.</div>
+      <div class="card-footer">
+        <span class="tag">Veiksmas</span>
+        <span class="badge badge-classic">⭐ Klasika</span>
+      </div>
+    </div>
+  </a>
+
+  <div class="empty" id="empty">
+    <span class="emoji">🔍</span>
+    Žaidimas nerastas. Pabandyk kitą paiešką.
+  </div>
+
+</div>
+
+<script>
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const searchInput = document.getElementById('search');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const countEl = document.getElementById('count');
+  const emptyEl = document.getElementById('empty');
+  let activeFilter = 'visi';
+
+  function update() {
+    const q = searchInput.value.toLowerCase().trim();
+    let visible = 0;
+    cards.forEach(card => {
+      const title = card.dataset.title || '';
+      const tags = card.dataset.tags || '';
+      const matchSearch = !q || title.includes(q);
+      const matchFilter = activeFilter === 'visi' || tags.includes(activeFilter);
+      const show = matchSearch && matchFilter;
+      card.style.display = show ? 'block' : 'none';
+      if (show) visible++;
+    });
+    countEl.textContent = `Rodoma: ${visible} žaidim${visible === 1 ? 'as' : visible < 10 ? 'ai' : 'ų'}`;
+    emptyEl.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  searchInput.addEventListener('input', update);
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      update();
+    });
+  });
+</script>
+</body>
+</html>
