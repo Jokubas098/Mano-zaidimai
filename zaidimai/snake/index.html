@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trumpas ar Ilgas? 🔤</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700;900&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #FF6B6B;
+    --teal: #4ECDC4;
+    --bg: #F7F3FF;
+    --card: #FFFFFF;
+    --text: #2D3436;
+    --gold: #FFD93D;
+    --purple: #6C5CE7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+  }
+
+  .bg-deco {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(circle at 15% 25%, rgba(108,92,231,0.1) 0%, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(78,205,196,0.1) 0%, transparent 45%);
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* HEADER */
+  header { text-align: center; padding: 24px 0 18px; }
+
+  header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--purple), #a29bfe, var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0 12px;
+    gap: 10px;
+  }
+
+  header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--purple), #a29bfe, var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    white-space: nowrap;
+  }
+
+  .score-row {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+  }
+
+  .chip {
+    background: white; border-radius: 50px; padding: 5px 12px;
+    font-weight: 900; font-size: .82rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .chip.pts  { color: #e17055; border: 2.5px solid #e17055; }
+  .chip.str  { color: var(--purple); border: 2.5px solid var(--purple); }
+
+  /* CARD */
+  .card {
+    background: white;
+    border-radius: 28px;
+    padding: 32px 24px 28px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+  }
+
+  /* progress */
+  .prog-bar {
+    height: 7px; background: #f0f0f0; border-radius: 10px; margin-bottom: 24px; overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--teal));
+    border-radius: 10px;
+    transition: width .5s ease;
+  }
+
+  .q-num {
+    text-align: center; font-size: .78rem; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase; color: #b2bec3; margin-bottom: 10px;
+  }
+
+  /* WORD DISPLAY */
+  .zodis-wrap {
+    text-align: center;
+    margin: 8px 0 6px;
+  }
+
+  .zodis {
+    font-family: 'Atkinson Hyperlegible', 'Nunito', sans-serif;
+    font-size: clamp(2.8rem, 11vw, 5.5rem);
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 2px;
+    line-height: 1.3;
+    display: inline-block;
+  }
+
+  .zodis .sprag {
+    display: inline-block;
+    min-width: .65em;
+    border-bottom: 6px solid var(--purple);
+    color: var(--purple);
+    position: relative;
+    transition: border-color .3s, color .3s;
+  }
+
+  .zodis .sprag.teisingai { border-color: #00b894; color: #00b894; }
+  .zodis .sprag.neteisingai { border-color: var(--red); color: var(--red); }
+
+  .klausimas {
+    text-align: center; color: #aaa; font-size: .95rem; font-weight: 700; margin: 6px 0 28px;
+  }
+
+  .klausimas strong { color: var(--text); }
+
+  /* CHOICES */
+  .choices {
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  }
+
+  .choice-btn {
+    flex: 1; min-width: 90px; max-width: 160px;
+    padding: 16px 10px;
+    border: 3px solid #e8e8e8;
+    border-radius: 18px;
+    background: white;
+    font-family: 'Baloo 2', cursive;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    cursor: pointer;
+    transition: all .15s;
+    box-shadow: 0 4px 0 #e0e0e0;
+    position: relative;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--purple);
+    color: var(--purple);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 #d6d0f7;
+  }
+
+  .choice-btn:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #e0e0e0;
+  }
+
+  .choice-btn:disabled { cursor: not-allowed; }
+
+  .choice-btn.correct {
+    background: #00b89420;
+    border-color: #00b894;
+    color: #00b894;
+    box-shadow: 0 4px 0 #00b89430;
+  }
+
+  .choice-btn.wrong {
+    background: #ff6b6b18;
+    border-color: var(--red);
+    color: var(--red);
+    box-shadow: 0 4px 0 #ff6b6b30;
+  }
+
+  .choice-label {
+    font-size: .65rem;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: block;
+    margin-top: 2px;
+    opacity: 0.7;
+  }
+
+  /* FEEDBACK STRIP */
+  .feedback {
+    margin-top: 22px;
+    border-radius: 16px;
+    padding: 14px 18px;
+    font-weight: 800;
+    font-size: 1rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all .25s;
+  }
+
+  .feedback.show { opacity: 1; transform: translateY(0); }
+  .feedback.ok  { background: #00b89418; color: #00867a; }
+  .feedback.err { background: #ff6b6b18; color: #c0392b; }
+
+  .zodis-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .flag-btn {
+    position: absolute;
+    top: 0; right: -38px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.25;
+    transition: opacity .2s, transform .2s;
+    padding: 4px;
+    line-height: 1;
+  }
+  .flag-btn:hover { opacity: 1; transform: scale(1.2); }
+  .flag-btn.flagged { opacity: 1; filter: grayscale(0); }
+
+  .lkz-btn {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    margin-top: 14px;
+    background: #f0f4ff;
+    border: 2px solid #c5d0f0;
+    border-radius: 12px;
+    padding: 7px 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: .82rem;
+    font-weight: 800;
+    color: #4a6fa5;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .lkz-btn.show { display: inline-flex; }
+  .lkz-btn:hover { background: #4a6fa5; color: white; border-color: #4a6fa5; }
+
+  .next-btn {
+    display: none;
+    margin-top: 14px;
+    background: linear-gradient(135deg, var(--purple), #a29bfe);
+    color: white; border: none; border-radius: 14px;
+    padding: 12px 32px;
+    font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 5px 0 rgba(108,92,231,.3);
+    transition: all .15s;
+  }
+  .next-btn.show { display: inline-block; }
+  .next-btn:hover { filter: brightness(1.08); }
+  .next-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(108,92,231,.3); }
+
+  .report-toast {
+    position: fixed;
+    bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #2D3436; color: white;
+    padding: 12px 24px; border-radius: 50px;
+    font-weight: 700; font-size: .9rem;
+    opacity: 0; pointer-events: none;
+    transition: all .3s; z-index: 300;
+    white-space: nowrap;
+  }
+  .report-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .flagged-list {
+    margin-top: 16px;
+    background: #fff5f5;
+    border: 2px solid #ffcccc;
+    border-radius: 16px;
+    padding: 16px 20px;
+    text-align: left;
+    display: none;
+  }
+  .flagged-list.show { display: block; }
+  .flagged-list h3 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem; font-weight: 800;
+    color: #c0392b; margin-bottom: 10px;
+  }
+  .flagged-list ul {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .flagged-list ul li {
+    font-size: .88rem; font-weight: 700; color: #555;
+    padding: 6px 0; border-bottom: 1px dashed #ffd0d0;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .flagged-list ul li:last-child { border-bottom: none; }
+  .flagged-item-text { flex: 1; }
+  .flagged-item-btns { display: flex; gap: 6px; flex-shrink: 0; }
+  .fi-btn {
+    border: none; border-radius: 8px; padding: 4px 10px;
+    font-family: 'Nunito', sans-serif; font-size: .75rem; font-weight: 800;
+    cursor: pointer; transition: filter .15s;
+  }
+  .fi-btn:hover { filter: brightness(1.1); }
+  .fi-btn.edit { background: #dfe6ff; color: #4a6fa5; }
+  .fi-btn.del  { background: #fde8e8; color: #c0392b; }
+  .copy-btn {
+    margin-top: 12px;
+    background: #FF6B6B;
+    color: white; border: none; border-radius: 10px;
+    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif; font-size: .85rem; font-weight: 800;
+    cursor: pointer; transition: filter .2s;
+  }
+  .copy-btn:hover { filter: brightness(1.1); }
+
+  /* MODAL */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.45); z-index: 400;
+    align-items: center; justify-content: center;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: white; border-radius: 24px;
+    padding: 28px 24px; width: 90%; max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal h3 {
+    font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800;
+    color: var(--text); margin-bottom: 16px;
+  }
+  .modal label {
+    display: block; font-size: .8rem; font-weight: 800;
+    color: #888; margin-bottom: 4px; margin-top: 12px;
+  }
+  .modal input {
+    width: 100%; padding: 10px 14px; border: 2px solid #e0e0e0;
+    border-radius: 12px; font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem; font-weight: 700; color: var(--text);
+    outline: none; transition: border-color .2s;
+  }
+  .modal input:focus { border-color: var(--purple); }
+  .modal-btns {
+    display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .modal-btn {
+    flex: 1; padding: 11px; border: none; border-radius: 14px;
+    font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800;
+    cursor: pointer; transition: filter .15s;
+  }
+  .modal-btn:hover { filter: brightness(1.08); }
+  .modal-btn.save   { background: linear-gradient(135deg, var(--purple), #a29bfe); color: white; }
+  .modal-btn.cancel { background: #f0f0f0; color: #888; }
+  .modal-btn.delete { background: #FF6B6B; color: white; }
+
+  /* RESULT SCREEN */
+  .result-screen {
+    display: none; text-align: center; padding: 10px 0;
+  }
+  .result-screen.show { display: block; }
+
+  .result-emoji { font-size: 4.5rem; margin-bottom: 10px; }
+
+  .result-screen h2 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2rem; font-weight: 800; color: var(--text); margin-bottom: 6px;
+  }
+
+  .result-score {
+    font-size: 3.5rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin: 10px 0 6px;
+  }
+
+  .result-msg { color: #888; font-weight: 700; font-size: 1rem; }
+
+  .restart-btn {
+    margin-top: 22px;
+    background: linear-gradient(135deg, var(--purple), #a29bfe);
+    color: white; border: none; border-radius: 18px;
+    padding: 15px 38px;
+    font-family: 'Baloo 2', cursive; font-size: 1.3rem; font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgba(108,92,231,.3);
+    transition: all .15s;
+  }
+  .restart-btn:hover { filter: brightness(1.08); }
+  .restart-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(108,92,231,.3); }
+
+  /* CONFETTI */
+  .konfeti { position: fixed; inset: 0; pointer-events: none; z-index: 200; overflow: hidden; }
+  .kd {
+    position: absolute;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    from { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+    to   { transform: translateY(110vh) rotate(800deg); opacity: 0; }
+  }
+
+  /* ANIMATIONS */
+  @keyframes pop-in {
+    0%   { transform: scale(.4); opacity: 0; }
+    65%  { transform: scale(1.12); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .pop { animation: pop-in .35s ease both; }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%,60%  { transform: translateX(-8px); }
+    40%,80%  { transform: translateX(8px); }
+  }
+  .shake { animation: shake .38s ease; }
+
+  /* LEGEND MINI */
+  .legend-mini {
+    display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .leg {
+    background: white; border-radius: 12px; padding: 7px 16px;
+    font-size: .82rem; font-weight: 800; color: #636e72;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  }
+  .leg span { margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<div class="bg-deco"></div>
+<div class="konfeti" id="konfeti"></div>
+
+<div class="wrap">
+  <header>
+    <h1>✏️ Trumpas ar Ilgas?</h1>
+    <div class="score-row">
+      <div class="chip pts">⭐ <span id="pts">0</span> tašk.</div>
+      <div class="chip str">🔥 <span id="str">0</span> iš eilės</div>
+    </div>
+  </header>
+
+  <div class="card" id="card">
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+    <!-- GAME -->
+    <div id="gameDiv">
+      <div class="q-num" id="qNum">1 / 15</div>
+
+      <div style="text-align:center">
+        <div class="zodis-wrap">
+          <div class="zodis" id="zodisEl"></div>
+          <button class="flag-btn" id="flagBtn" onclick="window._flagClicked=true; clearTimeout(window._nextTimer); flagWord();" title="Pažymėti kaip klaidingą">🚩</button>
+        </div>
+      </div>
+
+      <div class="klausimas" id="klausEl">Kokia raidė čia turėtų būti?</div>
+
+      <div class="choices" id="choicesEl"></div>
+
+      <div class="feedback" id="feedback"></div>
+      <div style="text-align:center; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:4px;">
+        <a class="lkz-btn" id="lkzBtn" href="#" target="_blank" rel="noopener" onclick="window._lkzClicked=true; clearTimeout(window._nextTimer);">📖 Žiūrėti LKŽ žodyne</a>
+        <button class="next-btn" id="nextBtn" onclick="eitiToliau()">Kitas →</button>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-screen" id="resultDiv">
+      <div class="result-emoji" id="resEmoji">🎉</div>
+      <h2 id="resTitle">Šauniai!</h2>
+      <div class="result-score" id="resScore">0/15</div>
+      <div class="result-msg" id="resMsg"></div>
+      <div class="flagged-list" id="flaggedList">
+        <h3>🚩 Pažymėti klaidingi žodžiai:</h3>
+        <ul id="flaggedUl"></ul>
+        <button class="copy-btn" onclick="copyFlagged()">📋 Kopijuoti sąrašą</button>
+      </div>
+      <button class="restart-btn" onclick="restart()">🔄 Žaisti iš naujo</button>
+    </div>
+  </div>
+</div>
+<div class="report-toast" id="reportToast"></div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>✏️ Taisyti žodį</h3>
+    <label>Žodis su spraga (_)</label>
+    <input type="text" id="editZ" placeholder="pvz. s_ris">
+    <label>Teisinga raidė</label>
+    <input type="text" id="editSprag" maxlength="2" placeholder="pvz. ū">
+    <label>Paaiškinimas</label>
+    <input type="text" id="editP" placeholder="pvz. sūris — ū (ilgasis)">
+    <div class="modal-btns">
+      <button class="modal-btn save"   onclick="saveEdit()">💾 Išsaugoti</button>
+      <button class="modal-btn delete" onclick="deleteWord()">🗑️ Ištrinti</button>
+      <button class="modal-btn cancel" onclick="closeModal()">Atšaukti</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── KLAUSIMŲ BAZĖ ───────────────────────────────────────────────────────────
+// Kiekvienas klausimas: { zodis, spragaIndex, variantai, teisingas, paaisk }
+// zodis — žodis kaip simbolių masyvas (sprag = null)
+// spragaIndex — raidės indeksas žodyje
+// variantai — pasirinkimo raidės
+// teisingas — teisinga raidė
+
+const DB = [
+  // u / ū
+  { zodis:"s_ris",    sprag:"ū", variantai:["u","ū"], paaisk:"sūris — ilgasis ū" },
+  { zodis:"r_ta",     sprag:"ū", variantai:["u","ū"], paaisk:"rūta — ilgasis ū" },
+  { zodis:"š_vis",    sprag:"ū", variantai:["u","ū"], paaisk:"šūvis — ilgasis ū" },
+  { zodis:"k_nas",    sprag:"ū", variantai:["u","ū"], paaisk:"kūnas — ilgasis ū" },
+  { zodis:"d_mai",    sprag:"ū", variantai:["u","ū"], paaisk:"dūmai — ilgasis ū" },
+  { zodis:"p_kas",    sprag:"ū", variantai:["u","ū"], paaisk:"pūkas — ilgasis ū" },
+  { zodis:"b_čius",   sprag:"u", variantai:["u","ū"], paaisk:"bučius — trumpasis u" },
+  { zodis:"d_rys",    sprag:"u", variantai:["u","ū"], paaisk:"durys — trumpasis u" },
+  { zodis:"s_olas",   sprag:"u", variantai:["u","ū"], paaisk:"suolas — trumpasis u" },
+  { zodis:"p_odas",   sprag:"u", variantai:["u","ū"], paaisk:"puodas — trumpasis u" },
+  { zodis:"k_kurūzas",sprag:"u", variantai:["u","ū"], paaisk:"kukurūzas — trumpasis u (pirmas)" },
+  { zodis:"t_neliai", sprag:"ū", variantai:["u","ū"], paaisk:"tūneliai → tunelis su ū?" },
+
+  // i / y (y = ilgasis i)
+  { zodis:"r_tas",    sprag:"y", variantai:["i","y"], paaisk:"rytas — ilgasis y" },
+  { zodis:"l_gus",    sprag:"y", variantai:["i","y"], paaisk:"lygus — ilgasis y" },
+  { zodis:"ž_dras",   sprag:"y", variantai:["i","y"], paaisk:"žydras — ilgasis y" },
+  { zodis:"v_ras",    sprag:"y", variantai:["i","y"], paaisk:"vyras — ilgasis y" },
+  { zodis:"k_škas",   sprag:"i", variantai:["i","y"], paaisk:"kiškas → miškas — trumpasis i" },
+  { zodis:"m_škas",   sprag:"i", variantai:["i","y"], paaisk:"miškas — trumpasis i" },
+  { zodis:"p_lis",    sprag:"i", variantai:["i","y"], paaisk:"pilis — trumpasis i" },
+  { zodis:"t_kras",   sprag:"i", variantai:["i","y"], paaisk:"tikras — trumpasis i" },
+  { zodis:"k_nas",    sprag:"i", variantai:["i","y"], paaisk:"kinas — trumpasis i" },
+  { zodis:"l_etus",   sprag:"i", variantai:["i","y"], paaisk:"lietus — trumpasis i" },
+
+  // a / ą
+  { zodis:"ž_sis",    sprag:"ą", variantai:["a","ą"], paaisk:"žąsis — ilgasis ą" },
+  { zodis:"ž_lias",   sprag:"a", variantai:["a","ą"], paaisk:"žalias — trumpasis a" },
+  { zodis:"v_šelis",  sprag:"ą", variantai:["a","ą"], paaisk:"vąšelis — ilgasis ą" },
+  { zodis:"_žuolas",  sprag:"ą", variantai:["a","ą"], paaisk:"ąžuolas — ilgasis ą" },
+  { zodis:"r_nka",    sprag:"a", variantai:["a","ą"], paaisk:"ranka — trumpasis a" },
+  { zodis:"k_lė",     sprag:"a", variantai:["a","ą"], paaisk:"kalė (kalba) — trumpasis a" },
+  { zodis:"m_ma",     sprag:"a", variantai:["a","ą"], paaisk:"mama — trumpasis a" },
+  { zodis:"b_tas",    sprag:"a", variantai:["a","ą"], paaisk:"batas — trumpasis a" },
+  { zodis:"k_sas",    sprag:"ą", variantai:["a","ą"], paaisk:"kąsas — ilgasis ą" },
+  { zodis:"gr_žti",   sprag:"į", variantai:["i","į"], paaisk:"grįžti — ilgasis į" },
+
+  // e / ė
+  { zodis:"t_vas",    sprag:"ė", variantai:["e","ė"], paaisk:"tėvas — ilgasis ė" },
+  { zodis:"m_nuo",    sprag:"ė", variantai:["e","ė"], paaisk:"mėnuo — ilgasis ė" },
+  { zodis:"l_ktuvas", sprag:"ė", variantai:["e","ė"], paaisk:"lėktuvas — ilgasis ė" },
+  { zodis:"v_jas",    sprag:"ė", variantai:["e","ė"], paaisk:"vėjas — ilgasis ė" },
+  { zodis:"k_lias",   sprag:"e", variantai:["e","ė"], paaisk:"kelias — trumpasis e" },
+  { zodis:"m_tas",    sprag:"e", variantai:["e","ė"], paaisk:"metas — trumpasis e" },
+  { zodis:"_žeras",   sprag:"e", variantai:["e","ė"], paaisk:"ežeras — trumpasis e" },
+  { zodis:"d_šinys",  sprag:"e", variantai:["e","ė"], paaisk:"dešinys — trumpasis e" },
+  { zodis:"s_suo",    sprag:"e", variantai:["e","ė"], paaisk:"šešios → sesuo — trumpasis e" },
+  { zodis:"d_mė",     sprag:"ė", variantai:["e","ė"], paaisk:"dėmė — ilgasis ė" },
+
+  // i / į
+  { zodis:"gr_žti",   sprag:"į", variantai:["i","į"], paaisk:"grįžti — ilgasis į" },
+  { zodis:"_domus",   sprag:"į", variantai:["i","į"], paaisk:"įdomus — ilgasis į" },
+  { zodis:"p_lnas",   sprag:"i", variantai:["i","į"], paaisk:"pilnas — trumpasis i" },
+  { zodis:"k_rvis",   sprag:"i", variantai:["i","į"], paaisk:"kirvis — trumpasis i" },
+  { zodis:"t_kslas",  sprag:"į", variantai:["i","į"], paaisk:"tikslas? → įtikslas — įdomus su į" },
+
+  // u / ų
+  { zodis:"_ūkis",    sprag:"ū", variantai:["u","ū"], paaisk:"ūkis — ilgasis ū" },
+  { zodis:"g_lbėti",  sprag:"e", variantai:["e","ė"], paaisk:"gelbėti — ilgasis ė" },
+  { zodis:"g_ras",    sprag:"e", variantai:["e","ė"], paaisk:"geras — trumpasis e" },
+];
+
+const KLAUSIMAI = [
+  // ── u / ū (labiausiai maišoma) ──────────────────────────────
+  { z:"s_ris",        sprag:"ū", v:["u","ū"], p:"sūris — ū (ilgasis)" },
+  { z:"š_vis",        sprag:"ū", v:["u","ū"], p:"šūvis — ū (ilgasis)" },
+  { z:"k_nas",        sprag:"ū", v:["u","ū"], p:"kūnas — ū (ilgasis)" },
+  { z:"d_mai",        sprag:"ū", v:["u","ū"], p:"dūmai — ū (ilgasis)" },
+  { z:"p_kas",        sprag:"ū", v:["u","ū"], p:"pūkas — ū (ilgasis)" },
+  { z:"r_ta",         sprag:"ū", v:["u","ū"], p:"rūta — ū (ilgasis)" },
+  { z:"b_ti",         sprag:"ū", v:["u","ū"], p:"būti — ū (ilgasis)" },
+  { z:"_kis",         sprag:"ū", v:["u","ū"], p:"ūkis — ū (ilgasis)" },
+  { z:"j_ra",         sprag:"ū", v:["u","ū"], p:"jūra — ū (ilgasis)" },
+  { z:"sp_das",       sprag:"ū", v:["u","ū"], p:"spūdas — ū (ilgasis)" },
+  { z:"bl_zgas",      sprag:"ū", v:["u","ū"], p:"blūzgas — ū (ilgasis)" },
+  { z:"dr_tas",       sprag:"ū", v:["u","ū"], p:"drūtas — ū (ilgasis)" },
+  { z:"sk_ti",        sprag:"ū", v:["u","ū"], p:"skūti — ū (ilgasis)" },
+  { z:"s_nkus",       sprag:"u", v:["u","ū"], p:"sunkus — u (trumpasis)" },
+  { z:"d_rys",        sprag:"u", v:["u","ū"], p:"durys — u (trumpasis)" },
+  { z:"s_olas",       sprag:"u", v:["u","ū"], p:"suolas — u (trumpasis)" },
+  { z:"p_odas",       sprag:"u", v:["u","ū"], p:"puodas — u (trumpasis)" },
+  { z:"b_čius",       sprag:"u", v:["u","ū"], p:"bučius — u (trumpasis)" },
+  { z:"r_pūžė",       sprag:"u", v:["u","ū"], p:"rupūžė — u (trumpasis, 1-as)" },
+  { z:"k_kurūzas",    sprag:"u", v:["u","ū"], p:"kukurūzas — u (trumpasis, 1-as)" },
+  { z:"t_las",        sprag:"ū", v:["u","ū"], p:"tūlas — ū (ilgasis)" },
+  { z:"gr_žė",        sprag:"u", v:["u","ū"], p:"gružė — u (trumpasis)" },
+  { z:"m_šė",         sprag:"ū", v:["u","ū"], p:"mūšė — ū (ilgasis)" },
+  { z:"l_žas",        sprag:"ū", v:["u","ū"], p:"lūžas — ū (ilgasis)" },
+  { z:"k_lė",         sprag:"ū", v:["u","ū"], p:"kūlė — ū (ilgasis)" },
+  { z:"t_ris",        sprag:"u", v:["u","ū"], p:"turis — u (trumpasis)" },
+
+  // ── i / y (y = ilgasis) ─────────────────────────────────────
+  { z:"r_tas",        sprag:"y", v:["i","y"], p:"rytas — y (ilgasis)" },
+  { z:"l_gus",        sprag:"y", v:["i","y"], p:"lygus — y (ilgasis)" },
+  { z:"ž_dras",       sprag:"y", v:["i","y"], p:"žydras — y (ilgasis)" },
+  { z:"v_ras",        sprag:"y", v:["i","y"], p:"vyras — y (ilgasis)" },
+  { z:"k_šis",        sprag:"y", v:["i","y"], p:"kyšis — y (ilgasis)" },
+  { z:"gr_žtis",      sprag:"y", v:["i","y"], p:"grįžtis → grybas — y" },
+  { z:"gr_bas",       sprag:"y", v:["i","y"], p:"grybas — y (ilgasis)" },
+  { z:"kl_dis",       sprag:"y", v:["i","y"], p:"klydis — y (ilgasis)" },
+  { z:"b_ti",         sprag:"ū", v:["u","ū"], p:"būti — ū (ilgasis)" },
+  { z:"r_šys",        sprag:"y", v:["i","y"], p:"ryšys — y (ilgasis)" },
+  { z:"m_škas",       sprag:"i", v:["i","y"], p:"miškas — i (trumpasis)" },
+  { z:"p_lis",        sprag:"i", v:["i","y"], p:"pilis — i (trumpasis)" },
+  { z:"t_kras",       sprag:"i", v:["i","y"], p:"tikras — i (trumpasis)" },
+  { z:"l_etus",       sprag:"i", v:["i","y"], p:"lietus — i (trumpasis)" },
+  { z:"k_nas",        sprag:"i", v:["i","y"], p:"kinas — i (trumpasis)" },
+  { z:"d_delė",       sprag:"i", v:["i","y"], p:"didelė — i (trumpasis)" },
+  { z:"v_ršus",       sprag:"i", v:["i","y"], p:"viršus — i (trumpasis)" },
+  { z:"k_timas",      sprag:"i", v:["i","y"], p:"kitimas — i (trumpasis)" },
+  { z:"b_čiulis",     sprag:"i", v:["i","y"], p:"bičiulis — i (trumpasis)" },
+  { z:"žv_žblys",     sprag:"i", v:["i","y"], p:"žvižblys — i (trumpasis, 1-as)" },
+  { z:"sk_rtas",      sprag:"i", v:["i","y"], p:"skirtas — i (trumpasis)" },
+  { z:"t_grė",        sprag:"y", v:["i","y"], p:"tygrė — y (ilgasis)" },
+  { z:"l_deris",      sprag:"y", v:["i","y"], p:"lyderis — y (ilgasis)" },
+  { z:"k_šenė",       sprag:"i", v:["i","y"], p:"kišenė — i (trumpasis)" },
+
+  // ── a / ą ───────────────────────────────────────────────────
+  { z:"ž_sis",        sprag:"ą", v:["a","ą"], p:"žąsis — ą (ilgasis)" },
+  { z:"v_šelis",      sprag:"ą", v:["a","ą"], p:"vąšelis — ą (ilgasis)" },
+  { z:"_žuolas",      sprag:"ą", v:["a","ą"], p:"ąžuolas — ą (ilgasis)" },
+  { z:"k_sas",        sprag:"ą", v:["a","ą"], p:"kąsas — ą (ilgasis)" },
+  { z:"sp_stai",      sprag:"ą", v:["a","ą"], p:"spąstai — ą (ilgasis)" },
+  { z:"d_ntys",       sprag:"a", v:["a","ą"], p:"dantys — a (trumpasis)" },
+  { z:"r_nka",        sprag:"a", v:["a","ą"], p:"ranka — a (trumpasis)" },
+  { z:"b_tas",        sprag:"a", v:["a","ą"], p:"batas — a (trumpasis)" },
+  { z:"k_lnas",       sprag:"a", v:["a","ą"], p:"kalnas — a (trumpasis)" },
+  { z:"l_pas",        sprag:"a", v:["a","ą"], p:"lapas — a (trumpasis)" },
+  { z:"s_las",        sprag:"a", v:["a","ą"], p:"salas — a (trumpasis)" },
+  { z:"v_rnas",       sprag:"a", v:["a","ą"], p:"varnas — a (trumpasis)" },
+  { z:"žv_ngė",       sprag:"a", v:["a","ą"], p:"žvangė — a (trumpasis)" },
+  { z:"sl_nkti",      sprag:"a", v:["a","ą"], p:"slankti — a (trumpasis)" },
+  { z:"tr_ukti",      sprag:"a", v:["a","ą"], p:"traukti — a (trumpasis)" },
+  { z:"p_mpuoti",     sprag:"a", v:["a","ą"], p:"pampuoti — a (trumpasis)" },
+  { z:"dr_skomas",    sprag:"a", v:["a","ą"], p:"draskomas — a (trumpasis)" },
+  { z:"k_ntrūs",      sprag:"a", v:["a","ą"], p:"kantrūs — a (trumpasis)" },
+
+  // ── e / ė ───────────────────────────────────────────────────
+  { z:"t_vas",        sprag:"ė", v:["e","ė"], p:"tėvas — ė (ilgasis)" },
+  { z:"m_nuo",        sprag:"ė", v:["e","ė"], p:"mėnuo — ė (ilgasis)" },
+  { z:"v_jas",        sprag:"ė", v:["e","ė"], p:"vėjas — ė (ilgasis)" },
+  { z:"d_mė",         sprag:"ė", v:["e","ė"], p:"dėmė — ė (ilgasis)" },
+  { z:"l_ktuvas",     sprag:"ė", v:["e","ė"], p:"lėktuvas — ė (ilgasis)" },
+  { z:"s_niai",       sprag:"ė", v:["e","ė"], p:"sėniai — ė (ilgasis)" },
+  { z:"š_šėlis",      sprag:"ė", v:["e","ė"], p:"šėšėlis — ė (ilgasis, 1-as)" },
+  { z:"d_dė",         sprag:"ė", v:["e","ė"], p:"dėdė — ė (ilgasis)" },
+  { z:"g_lė",         sprag:"ė", v:["e","ė"], p:"gėlė — ė (ilgasis)" },
+  { z:"k_lias",       sprag:"e", v:["e","ė"], p:"kelias — e (trumpasis)" },
+  { z:"m_tas",        sprag:"e", v:["e","ė"], p:"metas — e (trumpasis)" },
+  { z:"_žeras",       sprag:"e", v:["e","ė"], p:"ežeras — e (trumpasis)" },
+  { z:"g_ras",        sprag:"e", v:["e","ė"], p:"geras — e (trumpasis)" },
+  { z:"d_šinė",       sprag:"e", v:["e","ė"], p:"dešinė — e (trumpasis, 1-as)" },
+  { z:"m_ras",        sprag:"e", v:["e","ė"], p:"meras — e (trumpasis)" },
+  { z:"s_suo",        sprag:"e", v:["e","ė"], p:"sesuo — e (trumpasis)" },
+  { z:"g_lbėti",      sprag:"e", v:["e","ė"], p:"gelbėti — e (trumpasis, 1-as)" },
+  { z:"s_kmė",        sprag:"ė", v:["e","ė"], p:"sėkmė — ė (ilgasis)" },
+  { z:"r_gėti",       sprag:"e", v:["e","ė"], p:"regėti — e (trumpasis, 1-as)" },
+  { z:"b_gdamas",     sprag:"ė", v:["e","ė"], p:"bėgdamas — ė (ilgasis)" },
+  { z:"v_sti",        sprag:"e", v:["e","ė"], p:"vesti — e (trumpasis)" },
+  { z:"n_šti",        sprag:"e", v:["e","ė"], p:"nešti — e (trumpasis)" },
+  { z:"_mė",          sprag:"ė", v:["e","ė"], p:"ėmė — ė (ilgasis)" },
+  { z:"p_tis",        sprag:"ė", v:["e","ė"], p:"pėtis — ė (ilgasis)" },
+
+  // ── i / į ───────────────────────────────────────────────────
+  { z:"gr_žti",       sprag:"į", v:["i","į"], p:"grįžti — į (ilgasis)" },
+  { z:"_domus",       sprag:"į", v:["i","į"], p:"įdomus — į (ilgasis)" },
+  { z:"_spėti",       sprag:"į", v:["i","į"], p:"įspėti — į (ilgasis)" },
+  { z:"_taka",        sprag:"į", v:["i","į"], p:"įtaka — į (ilgasis)" },
+  { z:"_vykis",       sprag:"į", v:["i","į"], p:"įvykis — į (ilgasis)" },
+  { z:"_rodymas",     sprag:"į", v:["i","į"], p:"įrodymas — į (ilgasis)" },
+  { z:"tr_nkti",      sprag:"i", v:["i","į"], p:"trinkti — i (trumpasis)" },
+  { z:"p_lnas",       sprag:"i", v:["i","į"], p:"pilnas — i (trumpasis)" },
+  { z:"k_rvis",       sprag:"i", v:["i","į"], p:"kirvis — i (trumpasis)" },
+  { z:"v_ngriai",     sprag:"i", v:["i","į"], p:"vingriai — i (trumpasis)" },
+  { z:"sk_rti",       sprag:"i", v:["i","į"], p:"skirti — i (trumpasis)" },
+  { z:"l_kti",        sprag:"i", v:["i","į"], p:"likti — i (trumpasis)" },
+  { z:"s_ekti",       sprag:"i", v:["i","į"], p:"siekti — i (trumpasis)" },
+  { z:"pr_eiti",      sprag:"i", v:["i","į"], p:"prieiti — i (trumpasis, 2-as)" },
+  { z:"_brėžti",      sprag:"į", v:["i","į"], p:"įbrėžti — į (ilgasis)" },
+  { z:"_kliūti",      sprag:"į", v:["i","į"], p:"įkliūti — į (ilgasis)" },
+
+  // ── e / ę (nosinis) ─────────────────────────────────────────
+  { z:"t_sti",        sprag:"ę", v:["e","ę"], p:"tęsti — ę (nosinis ilgasis)" },
+  { z:"k_sti",        sprag:"ę", v:["e","ę"], p:"kęsti — ę (nosinis ilgasis)" },
+  { z:"sk_sti",       sprag:"ę", v:["e","ę"], p:"skęsti — ę (nosinis ilgasis)" },
+  { z:"l_sti",        sprag:"į", v:["i","į"], p:"lįsti — į (ilgasis)" },
+  { z:"v_ngti",       sprag:"e", v:["e","ę"], p:"vengti — e (trumpasis)" },
+  { z:"n_šti",        sprag:"e", v:["e","ę"], p:"nešti — e (trumpasis)" },
+
+  // ── ū žodžiai iš sąrašo ─────────────────────────────────────
+  { z:"b_stas",       sprag:"ū", v:["u","ū"], p:"būstas — ū (ilgasis)" },
+  { z:"b_klė",        sprag:"ū", v:["u","ū"], p:"būklė — ū (ilgasis)" },
+  { z:"b_gnas",       sprag:"ū", v:["u","ū"], p:"būgnas — ū (ilgasis)" },
+  { z:"b_das",        sprag:"ū", v:["u","ū"], p:"būdas — ū (ilgasis)" },
+  { z:"d_šis",        sprag:"ū", v:["u","ū"], p:"dūšis — ū (ilgasis)" },
+  { z:"s_kurys",      sprag:"ū", v:["u","ū"], p:"sūkurys — ū (ilgasis)" },
+  { z:"s_puoklės",    sprag:"ū", v:["u","ū"], p:"sūpuoklės — ū (ilgasis)" },
+  { z:"s_nus",        sprag:"ū", v:["u","ū"], p:"sūnus — ū (ilgasis)" },
+  { z:"k_dikis",      sprag:"ū", v:["u","ū"], p:"kūdikis — ū (ilgasis)" },
+  { z:"k_ryba",       sprag:"ū", v:["u","ū"], p:"kūryba — ū (ilgasis)" },
+  { z:"kl_tis",       sprag:"ū", v:["u","ū"], p:"kliūtis — ū (ilgasis)" },
+  { z:"p_ga",         sprag:"ū", v:["u","ū"], p:"pūga — ū (ilgasis)" },
+  { z:"p_slė",        sprag:"ū", v:["u","ū"], p:"pūslė — ū (ilgasis)" },
+  { z:"r_bai",        sprag:"ū", v:["u","ū"], p:"rūbai — ū (ilgasis)" },
+  { z:"r_pestis",     sprag:"ū", v:["u","ū"], p:"rūpestis — ū (ilgasis)" },
+  { z:"r_šis",        sprag:"ū", v:["u","ū"], p:"rūšis — ū (ilgasis)" },
+  { z:"r_gštis",      sprag:"ū", v:["u","ū"], p:"rūgštis — ū (ilgasis)" },
+  { z:"si_las",       sprag:"ū", v:["u","ū"], p:"siūlas — ū (ilgasis)" },
+  { z:"si_ti",        sprag:"ū", v:["u","ū"], p:"siūti — ū (ilgasis)" },
+  { z:"si_lyti",      sprag:"ū", v:["u","ū"], p:"siūlyti — ū (ilgasis)" },
+  { z:"t_ris",        sprag:"ū", v:["u","ū"], p:"tūris — ū (ilgasis)" },
+  { z:"_gis",         sprag:"ū", v:["u","ū"], p:"ūgis — ū (ilgasis)" },
+  { z:"_dra",         sprag:"ū", v:["u","ū"], p:"ūdra — ū (ilgasis)" },
+  { z:"_žti",         sprag:"ū", v:["u","ū"], p:"ūžti — ū (ilgasis)" },
+  { z:"l_pa",         sprag:"ū", v:["u","ū"], p:"lūpa — ū (ilgasis)" },
+  { z:"l_žti",        sprag:"ū", v:["u","ū"], p:"lūžti — ū (ilgasis)" },
+  { z:"m_ras",        sprag:"ū", v:["u","ū"], p:"mūras — ū (ilgasis)" },
+  { z:"r_dys",        sprag:"ū", v:["u","ū"], p:"rūdys — ū (ilgasis)" },
+  { z:"p_snis",       sprag:"ū", v:["u","ū"], p:"pūsnis — ū (ilgasis)" },
+  { z:"_mėdė",        sprag:"ū", v:["u","ū"], p:"ūmėdė — ū (ilgasis)" },
+  { z:"kult_ra",      sprag:"ū", v:["u","ū"], p:"kultūra — ū (ilgasis)" },
+  { z:"literat_ra",   sprag:"ū", v:["u","ū"], p:"literatūra — ū (ilgasis)" },
+  { z:"nat_ra",       sprag:"ū", v:["u","ū"], p:"natūra — ū (ilgasis)" },
+  { z:"strukt_ra",    sprag:"ū", v:["u","ū"], p:"struktūra — ū (ilgasis)" },
+  { z:"fig_ra",       sprag:"ū", v:["u","ū"], p:"figūra — ū (ilgasis)" },
+  { z:"u_ga",         sprag:"o", v:["o","u"], p:"uoga — o (trumpasis)" },
+
+  // ── į žodžiai iš sąrašo ─────────────────────────────────────
+  { z:"_vairus",      sprag:"į", v:["i","į"], p:"įvairus — į (ilgasis)" },
+  { z:"_spūdis",      sprag:"į", v:["i","į"], p:"įspūdis — į (ilgasis)" },
+  { z:"_protis",      sprag:"į", v:["i","į"], p:"įprotis — į (ilgasis)" },
+  { z:"_rašas",       sprag:"į", v:["i","į"], p:"įrašas — į (ilgasis)" },
+  { z:"_monė",        sprag:"į", v:["i","į"], p:"įmonė — į (ilgasis)" },
+  { z:"_rankis",      sprag:"į", v:["i","į"], p:"įrankis — į (ilgasis)" },
+  { z:"_žanga",       sprag:"į", v:["i","į"], p:"įžanga — į (ilgasis)" },
+  { z:"_lanka",       sprag:"į", v:["i","į"], p:"įlanka — į (ilgasis)" },
+  { z:"_tampa",       sprag:"į", v:["i","į"], p:"įtampa — į (ilgasis)" },
+  { z:"_našas",       sprag:"į", v:["i","į"], p:"įnašas — į (ilgasis)" },
+  { z:"_kyrus",       sprag:"į", v:["i","į"], p:"įkyrus — į (ilgasis)" },
+  { z:"_žymus",       sprag:"į", v:["i","į"], p:"įžymus — į (ilgasis)" },
+  { z:"_žūlus",       sprag:"į", v:["i","į"], p:"įžūlus — į (ilgasis)" },
+  { z:"_žvalga",      sprag:"į", v:["i","į"], p:"įžvalga — į (ilgasis)" },
+  { z:"_sakas",       sprag:"į", v:["i","į"], p:"įsakas — į (ilgasis)" },
+  { z:"_spėti",       sprag:"į", v:["i","į"], p:"įspėti — į (ilgasis)" },
+  { z:"_tikti",       sprag:"į", v:["i","į"], p:"įtikti — į (ilgasis)" },
+  { z:"_žeisti",      sprag:"į", v:["i","į"], p:"įžeisti — į (ilgasis)" },
+  { z:"_žengti",      sprag:"į", v:["i","į"], p:"įžengti — į (ilgasis)" },
+  { z:"_kliūti",      sprag:"į", v:["i","į"], p:"įkliūti — į (ilgasis)" },
+
+  // ── y žodžiai iš sąrašo ─────────────────────────────────────
+  { z:"_patybė",      sprag:"y", v:["i","y"], p:"ypatybė — y (ilgasis)" },
+  { z:"_da",          sprag:"y", v:["i","y"], p:"yda — y (ilgasis)" },
+  { z:"_la",          sprag:"y", v:["i","y"], p:"yla — y (ilgasis)" },
+  { z:"g_ja",         sprag:"i", v:["i","y"], p:"gija — i (trumpasis)" },
+  { z:"g_nyba",       sprag:"y", v:["i","y"], p:"gynyba — y (ilgasis)" },
+  { z:"g_vybė",       sprag:"y", v:["i","y"], p:"gyvybė — y (ilgasis)" },
+  { z:"g_vūnas",      sprag:"y", v:["i","y"], p:"gyvūnas — y (ilgasis)" },
+  { z:"g_vatė",       sprag:"y", v:["i","y"], p:"gyvatė — y (ilgasis)" },
+  { z:"r_šys",        sprag:"y", v:["i","y"], p:"ryšys — y (ilgasis)" },
+  { z:"r_šulys",      sprag:"y", v:["i","y"], p:"ryšulys — y (ilgasis)" },
+  { z:"pl_ta",        sprag:"y", v:["i","y"], p:"plyta — y (ilgasis)" },
+  { z:"pl_šys",       sprag:"y", v:["i","y"], p:"plyšys — y (ilgasis)" },
+  { z:"kl_stkelis",   sprag:"y", v:["i","y"], p:"klystkelis — y (ilgasis)" },
+  { z:"m_slė",        sprag:"į", v:["i","į"], p:"mįslė — į (ilgasis)" },
+  { z:"kl_dis",       sprag:"y", v:["i","y"], p:"klydis — y (ilgasis)" },
+  { z:"gal_nas",      sprag:"ū", v:["u","ū"], p:"galiūnas — ū (ilgasis)" },
+  { z:"klaj_nas",     sprag:"ū", v:["u","ū"], p:"klajūnas — ū (ilgasis)" },
+  { z:"kop_stas",     sprag:"ū", v:["u","ū"], p:"kopūstas — ū (ilgasis)" },
+
+  // ── ą žodžiai iš sąrašo ─────────────────────────────────────
+  { z:"m_styti",      sprag:"ą", v:["a","ą"], p:"mąstyti — ą (ilgasis)" },
+  { z:"dr_sa",        sprag:"ą", v:["a","ą"], p:"drąsa — ą (ilgasis)" },
+  { z:"gr_žinti",     sprag:"ą", v:["a","ą"], p:"grąžinti — ą (ilgasis)" },
+  { z:"gr_žtas",      sprag:"ą", v:["a","ą"], p:"grąžtas — ą (ilgasis)" },
+  { z:"s_lyga",       sprag:"ą", v:["a","ą"], p:"sąlyga — ą (ilgasis)" },
+  { z:"s_žinė",       sprag:"ą", v:["a","ą"], p:"sąžinė — ą (ilgasis)" },
+  { z:"s_voka",       sprag:"ą", v:["a","ą"], p:"sąvoka — ą (ilgasis)" },
+  { z:"s_rašas",      sprag:"ą", v:["a","ą"], p:"sąrašas — ą (ilgasis)" },
+  { z:"s_junga",      sprag:"ą", v:["a","ą"], p:"sąjunga — ą (ilgasis)" },
+  { z:"s_skaita",     sprag:"ą", v:["a","ą"], p:"sąskaita — ą (ilgasis)" },
+  { z:"s_monė",       sprag:"ą", v:["a","ą"], p:"sąmonė — ą (ilgasis)" },
+  { z:"s_veika",      sprag:"ą", v:["a","ą"], p:"sąveika — ą (ilgasis)" },
+  { z:"sp_stai",      sprag:"ą", v:["a","ą"], p:"spąstai — ą (ilgasis)" },
+  { z:"k_snis",       sprag:"ą", v:["a","ą"], p:"kąsnis — ą (ilgasis)" },
+  { z:"r_stas",       sprag:"ą", v:["a","ą"], p:"rąstas — ą (ilgasis)" },
+  { z:"l_stelė",      sprag:"ą", v:["a","ą"], p:"ląstelė — ą (ilgasis)" },
+  { z:"dr_suolis",    sprag:"ą", v:["a","ą"], p:"drąsuolis — ą (ilgasis)" },
+  { z:"tr_ukti",      sprag:"a", v:["a","ą"], p:"traukti — a (trumpasis)" },
+  { z:"d_ntys",       sprag:"a", v:["a","ą"], p:"dantys — a (trumpasis)" },
+  { z:"l_pas",        sprag:"a", v:["a","ą"], p:"lapas — a (trumpasis)" },
+  { z:"k_ntrūs",      sprag:"a", v:["a","ą"], p:"kantrūs — a (trumpasis)" },
+  { z:"v_rnas",       sprag:"a", v:["a","ą"], p:"varnas — a (trumpasis)" },
+
+  // ── papildomi ū žodžiai ──────────────────────────────────────
+  { z:"b_riai",       sprag:"ū", v:["u","ū"], p:"būriai — ū (ilgasis)" },
+  { z:"b_tis",        sprag:"ū", v:["u","ū"], p:"būtis — ū (ilgasis)" },
+  { z:"b_sena",       sprag:"ū", v:["u","ū"], p:"būsena — ū (ilgasis)" },
+  { z:"b_tinas",      sprag:"ū", v:["u","ū"], p:"būtinas — ū (ilgasis)" },
+  { z:"b_tybė",       sprag:"ū", v:["u","ū"], p:"būtybė — ū (ilgasis)" },
+  { z:"b_stinė",      sprag:"ū", v:["u","ū"], p:"būstinė — ū (ilgasis)" },
+  { z:"b_rimas",      sprag:"ū", v:["u","ū"], p:"būrimas — ū (ilgasis)" },
+  { z:"d_da",         sprag:"ū", v:["u","ū"], p:"dūda — ū (ilgasis)" },
+  { z:"d_savimas",    sprag:"ū", v:["u","ū"], p:"dūsavimas — ū (ilgasis)" },
+  { z:"d_zgimas",     sprag:"ū", v:["u","ū"], p:"dūzgimas — ū (ilgasis)" },
+  { z:"d_linėti",     sprag:"ū", v:["u","ū"], p:"dūlinėti — ū (ilgasis)" },
+  { z:"g_džiai",      sprag:"ū", v:["u","ū"], p:"gūdžiai → gūdus — ū (ilgasis)" },
+  { z:"g_džiai",      sprag:"ū", v:["u","ū"], p:"gūdus — ū (ilgasis)" },
+  { z:"gr_sti",       sprag:"ū", v:["u","ū"], p:"grūsti — ū (ilgasis)" },
+  { z:"j_reivis",     sprag:"ū", v:["u","ū"], p:"jūreivis — ū (ilgasis)" },
+  { z:"j_rinis",      sprag:"ū", v:["u","ū"], p:"jūrinis — ū (ilgasis)" },
+  { z:"kl_grinda",    sprag:"ū", v:["u","ū"], p:"kūlgrinda — ū (ilgasis)" },
+  { z:"kl_tinis",     sprag:"ū", v:["u","ū"], p:"kliūtinis — ū (ilgasis)" },
+  { z:"k_jis",        sprag:"ū", v:["u","ū"], p:"kūjis — ū (ilgasis)" },
+  { z:"k_liais",      sprag:"ū", v:["u","ū"], p:"kūliais — ū (ilgasis)" },
+  { z:"k_kurti",      sprag:"ū", v:["u","ū"], p:"kūkurti → kūrenti — ū (ilgasis)" },
+  { z:"k_rinys",      sprag:"ū", v:["u","ū"], p:"kūrinys — ū (ilgasis)" },
+  { z:"k_rėjas",      sprag:"ū", v:["u","ū"], p:"kūrėjas — ū (ilgasis)" },
+  { z:"k_psoti",      sprag:"ū", v:["u","ū"], p:"kūpsoti — ū (ilgasis)" },
+  { z:"l_šna",        sprag:"ū", v:["u","ū"], p:"lūšna — ū (ilgasis)" },
+  { z:"l_žis",        sprag:"ū", v:["u","ū"], p:"lūžis — ū (ilgasis)" },
+  { z:"m_vėti",       sprag:"ū", v:["u","ū"], p:"mūvėti — ū (ilgasis)" },
+  { z:"m_rinis",      sprag:"ū", v:["u","ū"], p:"mūrinis — ū (ilgasis)" },
+  { z:"p_kšuoti",     sprag:"ū", v:["u","ū"], p:"pūškuoti — ū (ilgasis)" },
+  { z:"p_kuotas",     sprag:"ū", v:["u","ū"], p:"pūkuotas — ū (ilgasis)" },
+  { z:"p_stis",       sprag:"ū", v:["u","ū"], p:"pūstis — ū (ilgasis)" },
+  { z:"p_timas",      sprag:"ū", v:["u","ū"], p:"pūtimas — ū (ilgasis)" },
+  { z:"p_liai",       sprag:"ū", v:["u","ū"], p:"pūliai — ū (ilgasis)" },
+  { z:"r_kas",        sprag:"ū", v:["u","ū"], p:"rūkas — ū (ilgasis)" },
+  { z:"r_kyti",       sprag:"ū", v:["u","ū"], p:"rūkyti — ū (ilgasis)" },
+  { z:"r_sys",        sprag:"ū", v:["u","ū"], p:"rūsys — ū (ilgasis)" },
+  { z:"r_dyti",       sprag:"ū", v:["u","ū"], p:"rūdyti — ū (ilgasis)" },
+  { z:"r_stis",       sprag:"ū", v:["u","ū"], p:"rūstis — ū (ilgasis)" },
+  { z:"r_šiuoti",     sprag:"ū", v:["u","ū"], p:"rūšiuoti — ū (ilgasis)" },
+  { z:"s_dymas",      sprag:"ū", v:["u","ū"], p:"sūdymas — ū (ilgasis)" },
+  { z:"s_nelis",      sprag:"ū", v:["u","ū"], p:"sūnelis — ū (ilgasis)" },
+  { z:"s_naitis",     sprag:"ū", v:["u","ū"], p:"sūnaitis — ū (ilgasis)" },
+  { z:"s_puoti",      sprag:"ū", v:["u","ū"], p:"sūpuoti — ū (ilgasis)" },
+  { z:"s_kurys",      sprag:"ū", v:["u","ū"], p:"sūkurys — ū (ilgasis)" },
+  { z:"s_rokas",      sprag:"ū", v:["u","ū"], p:"sūrokas — ū (ilgasis)" },
+  { z:"si_lelis",     sprag:"ū", v:["u","ū"], p:"siūlelis — ū (ilgasis)" },
+  { z:"si_vėjas",     sprag:"ū", v:["u","ū"], p:"siuvėjas — ū (ilgasis)" },
+  { z:"si_nėjas",     sprag:"ū", v:["u","ū"], p:"siuntėjas — u (trumpasis)" },
+  { z:"si_ntinys",    sprag:"u", v:["u","ū"], p:"siuntinys — u (trumpasis)" },
+  { z:"t_pčioti",     sprag:"ū", v:["u","ū"], p:"tūpčioti — ū (ilgasis)" },
+  { z:"t_noti",       sprag:"ū", v:["u","ū"], p:"tūnoti — ū (ilgasis)" },
+  { z:"t_pimas",      sprag:"ū", v:["u","ū"], p:"tūpimas — ū (ilgasis)" },
+  { z:"t_psnis",      sprag:"ū", v:["u","ū"], p:"tūpsnis — ū (ilgasis)" },
+  { z:"_kai",         sprag:"ū", v:["u","ū"], p:"ūkai → ūkas — ū (ilgasis)" },
+  { z:"_kanotas",     sprag:"ū", v:["u","ū"], p:"ūkanotas — ū (ilgasis)" },
+  { z:"_kininkas",    sprag:"ū", v:["u","ū"], p:"ūkininkas — ū (ilgasis)" },
+  { z:"_mumas",       sprag:"ū", v:["u","ū"], p:"ūmumas — ū (ilgasis)" },
+  { z:"_suotas",      sprag:"ū", v:["u","ū"], p:"ūsuotas — ū (ilgasis)" },
+  { z:"_žesys",       sprag:"ū", v:["u","ū"], p:"ūžesys — ū (ilgasis)" },
+  { z:"_saitis",      sprag:"ū", v:["u","ū"], p:"ūsas → ūsuotas — ū (ilgasis)" },
+  { z:"_dra",         sprag:"ū", v:["u","ū"], p:"ūdra — ū (ilgasis)" },
+  { z:"_mai",         sprag:"ū", v:["u","ū"], p:"ūmai — ū (ilgasis)" },
+  { z:"ž_ti",         sprag:"ū", v:["u","ū"], p:"žūti — ū (ilgasis)" },
+  { z:"ž_tis",        sprag:"ū", v:["u","ū"], p:"žūtis — ū (ilgasis)" },
+  { z:"ž_klė",        sprag:"ū", v:["u","ū"], p:"žūklė — ū (ilgasis)" },
+  { z:"ž_tbūtinis",   sprag:"ū", v:["u","ū"], p:"žūtbūtinis — ū (1-as, ilgasis)" },
+  { z:"architekt_ra", sprag:"ū", v:["u","ū"], p:"architektūra — ū (ilgasis)" },
+  { z:"cenz_ra",      sprag:"ū", v:["u","ū"], p:"cenzūra — ū (ilgasis)" },
+  { z:"brošiūra",     sprag:"ū", v:["u","ū"], p:"brošiūra — ū (ilgasis)" },
+  { z:"gali_nas",     sprag:"ū", v:["u","ū"], p:"galiūnas — ū (ilgasis)" },
+  { z:"klaj_nas",     sprag:"ū", v:["u","ū"], p:"klajūnas — ū (ilgasis)" },
+  { z:"kop_stas",     sprag:"ū", v:["u","ū"], p:"kopūstas — ū (ilgasis)" },
+
+  // ── papildomi į / y žodžiai ──────────────────────────────────
+  { z:"_žymybė",      sprag:"į", v:["i","į"], p:"įžymybė — į (ilgasis)" },
+  { z:"_žirnis",      sprag:"į", v:["i","į"], p:"įžirnis — į (ilgasis)" },
+  { z:"_žvalgus",     sprag:"į", v:["i","į"], p:"įžvalgus — į (ilgasis)" },
+  { z:"_vykdyti",     sprag:"į", v:["i","į"], p:"įvykdyti — į (ilgasis)" },
+  { z:"_vykti",       sprag:"į", v:["i","į"], p:"įvykti — į (ilgasis)" },
+  { z:"_veikti",      sprag:"į", v:["i","į"], p:"įveikti — į (ilgasis)" },
+  { z:"_vežti",       sprag:"į", v:["i","į"], p:"įvežti — į (ilgasis)" },
+  { z:"_vardis",      sprag:"į", v:["i","į"], p:"įvardis — į (ilgasis)" },
+  { z:"_valdymas",    sprag:"į", v:["i","į"], p:"įvaldymas — į (ilgasis)" },
+  { z:"_vada",        sprag:"į", v:["i","į"], p:"įvada — į (ilgasis)" },
+  { z:"_tvaras",      sprag:"į", v:["i","į"], p:"įtvaras — į (ilgasis)" },
+  { z:"_tvirtinti",   sprag:"į", v:["i","į"], p:"įtvirtinti — į (ilgasis)" },
+  { z:"_tūžis",       sprag:"į", v:["i","į"], p:"įtūžis — į (ilgasis)" },
+  { z:"_tarti",       sprag:"į", v:["i","į"], p:"įtarti — į (ilgasis)" },
+  { z:"_tartinas",    sprag:"į", v:["i","į"], p:"įtartinas — į (ilgasis)" },
+  { z:"_tarumas",     sprag:"į", v:["i","į"], p:"įtarumas — į (ilgasis)" },
+  { z:"_stoti",       sprag:"į", v:["i","į"], p:"įstoti — į (ilgasis)" },
+  { z:"_strigti",     sprag:"į", v:["i","į"], p:"įstrigti — į (ilgasis)" },
+  { z:"_statai",      sprag:"į", v:["i","į"], p:"įstatai — į (ilgasis)" },
+  { z:"_spūdingas",   sprag:"į", v:["i","į"], p:"įspūdingas — į (ilgasis)" },
+  { z:"_spūtis",      sprag:"į", v:["i","į"], p:"įspūtis → įspūdis — į (ilgasis)" },
+  { z:"_spauda",      sprag:"į", v:["i","į"], p:"įspauda — į (ilgasis)" },
+  { z:"_siminti",     sprag:"į", v:["i","į"], p:"įsiminti — į (ilgasis)" },
+  { z:"_sigyti",      sprag:"į", v:["i","į"], p:"įsigyti — į (ilgasis)" },
+  { z:"_sakyti",      sprag:"į", v:["i","į"], p:"įsakyti — į (ilgasis)" },
+  { z:"_rodymas",     sprag:"į", v:["i","į"], p:"įrodymas — į (ilgasis)" },
+  { z:"_rengti",      sprag:"į", v:["i","į"], p:"įrengti — į (ilgasis)" },
+  { z:"_ranga",       sprag:"į", v:["i","į"], p:"įranga — į (ilgasis)" },
+  { z:"_pūsti",       sprag:"į", v:["i","į"], p:"įpūsti — į (ilgasis)" },
+  { z:"_pėdinis",     sprag:"į", v:["i","į"], p:"įpėdinis — į (ilgasis)" },
+  { z:"_pilti",       sprag:"į", v:["i","į"], p:"įpilti — į (ilgasis)" },
+  { z:"_pjova",       sprag:"į", v:["i","į"], p:"įpjova — į (ilgasis)" },
+  { z:"_namis",       sprag:"į", v:["i","į"], p:"įnamis — į (ilgasis)" },
+  { z:"_nagis",       sprag:"į", v:["i","į"], p:"įnagis — į (ilgasis)" },
+  { z:"_našas",       sprag:"į", v:["i","į"], p:"įnašas — į (ilgasis)" },
+  { z:"_noris",       sprag:"į", v:["i","į"], p:"įnoris — į (ilgasis)" },
+  { z:"_moka",        sprag:"į", v:["i","į"], p:"įmoka — į (ilgasis)" },
+  { z:"_mantrus",     sprag:"į", v:["i","į"], p:"įmantrus — į (ilgasis)" },
+  { z:"_laida",       sprag:"į", v:["i","į"], p:"įlaida — į (ilgasis)" },
+  { z:"_kalnė",       sprag:"į", v:["i","į"], p:"įkalnė — į (ilgasis)" },
+  { z:"_kaltis",      sprag:"į", v:["i","į"], p:"įkaltis — į (ilgasis)" },
+  { z:"_eiga",        sprag:"į", v:["i","į"], p:"įeiga — į (ilgasis)" },
+
+  // ── papildomi y žodžiai ──────────────────────────────────────
+  { z:"_patumas",     sprag:"y", v:["i","y"], p:"ypatumas — y (ilgasis)" },
+  { z:"_patingas",    sprag:"y", v:["i","y"], p:"ypatingas — y (ilgasis)" },
+  { z:"_pač",         sprag:"y", v:["i","y"], p:"ypač — y (ilgasis)" },
+  { z:"_rimas",       sprag:"y", v:["i","y"], p:"yrimas — y (ilgasis)" },
+  { z:"g_ja",         sprag:"i", v:["i","y"], p:"gija — i (trumpasis)" },
+  { z:"g_jimas",      sprag:"i", v:["i","y"], p:"gijimas — i (trumpasis)" },
+  { z:"g_jantis",     sprag:"i", v:["i","y"], p:"gijantis — i (trumpasis)" },
+  { z:"g_sla",        sprag:"y", v:["i","y"], p:"gysla — y (ilgasis)" },
+  { z:"g_slotas",     sprag:"y", v:["i","y"], p:"gyslotas — y (ilgasis)" },
+  { z:"g_vas",        sprag:"y", v:["i","y"], p:"gyvas — y (ilgasis)" },
+  { z:"g_ventis",     sprag:"y", v:["i","y"], p:"gyventis → gyventojas — y" },
+  { z:"g_ventojas",   sprag:"y", v:["i","y"], p:"gyventojas — y (ilgasis)" },
+  { z:"g_venti",      sprag:"y", v:["i","y"], p:"gyventi — y (ilgasis)" },
+  { z:"g_vulys",      sprag:"y", v:["i","y"], p:"gyvulys — y (ilgasis)" },
+  { z:"g_vumas",      sprag:"y", v:["i","y"], p:"gyvumas — y (ilgasis)" },
+  { z:"g_vatvorė",    sprag:"y", v:["i","y"], p:"gyvatvorė — y (ilgasis)" },
+  { z:"g_vavimas",    sprag:"y", v:["i","y"], p:"gyvavimas — y (ilgasis)" },
+  { z:"g_vastingas",  sprag:"y", v:["i","y"], p:"gyvastingas — y (ilgasis)" },
+  { z:"g_žta",        sprag:"ū", v:["u","ū"], p:"gūžta — ū (ilgasis)" },
+  { z:"r_ti",         sprag:"y", v:["i","y"], p:"ryti — y (ilgasis)" },
+  { z:"r_jant",       sprag:"y", v:["i","y"], p:"ryjant — y (ilgasis)" },
+  { z:"r_tinis",      sprag:"y", v:["i","y"], p:"rytinis — y (ilgasis)" },
+  { z:"pl_telė",      sprag:"y", v:["i","y"], p:"plytelė — y (ilgasis)" },
+  { z:"pl_šimas",     sprag:"y", v:["i","y"], p:"plyšimas — y (ilgasis)" },
+  { z:"r_šulys",      sprag:"y", v:["i","y"], p:"ryšulys — y (ilgasis)" },
+  { z:"kl_sti",       sprag:"y", v:["i","y"], p:"klysti — y (ilgasis)" },
+  { z:"l_deris",      sprag:"y", v:["i","y"], p:"lyderis — y (ilgasis)" },
+  { z:"v_ti",         sprag:"y", v:["i","y"], p:"vyti — y (ilgasis)" },
+  { z:"v_ja",         sprag:"e", v:["e","ė"], p:"veja (veja pėdas) — e (trumpasis)" },
+  { z:"l_ti",         sprag:"y", v:["i","y"], p:"lyti — y (ilgasis)" },
+  { z:"l_ja",         sprag:"i", v:["i","y"], p:"lija — i (trumpasis)" },
+  { z:"g_ti",         sprag:"y", v:["i","y"], p:"gyti — y (ilgasis)" },
+  { z:"t_stanti",     sprag:"į", v:["i","į"], p:"tįstanti — į (ilgasis)" },
+  { z:"t_sti",        sprag:"į", v:["i","į"], p:"tįsti — į (ilgasis)" },
+  { z:"pr_nykti",     sprag:"a", v:["a","ą"], p:"pranykti — a (trumpasis)" },
+  { z:"išn_kti",      sprag:"y", v:["i","y"], p:"išnykti — y (ilgasis)" },
+  { z:"apn_kti",      sprag:"y", v:["i","y"], p:"apnykti — y (ilgasis)" },
+  { z:"tv_nkti",      sprag:"y", v:["i","y"], p:"tvynkti → tįnkti — y/į" },
+  { z:"m_slė",        sprag:"į", v:["i","į"], p:"mįslė — į (ilgasis)" },
+  { z:"m_slingas",    sprag:"į", v:["i","į"], p:"mįslingas — į (ilgasis)" },
+  { z:"gr_žinys",     sprag:"e", v:["e","ė"], p:"gręžinys — e (trumpasis)" },
+  { z:"gr_žti",       sprag:"e", v:["e","ė"], p:"gręžti — e (trumpasis)" },
+
+  // ── veiksmažodžiai su -yti / -ydavo ─────────────────────────
+  { z:"dar_ti",       sprag:"y", v:["i","y"], p:"daryti — y (ilgasis)" },
+  { z:"sak_ti",       sprag:"y", v:["i","y"], p:"sakyti — y (ilgasis)" },
+  { z:"raš_ti",       sprag:"y", v:["i","y"], p:"rašyti — y (ilgasis)" },
+  { z:"skait_ti",     sprag:"y", v:["i","y"], p:"skaityti — y (ilgasis)" },
+  { z:"mat_ti",       sprag:"y", v:["i","y"], p:"matyti — y (ilgasis)" },
+  { z:"stat_ti",      sprag:"y", v:["i","y"], p:"statyti — y (ilgasis)" },
+  { z:"vykd_ti",      sprag:"y", v:["i","y"], p:"vykdyti — y (ilgasis)" },
+  { z:"laik_ti",      sprag:"y", v:["i","y"], p:"laikyti — y (ilgasis)" },
+  { z:"lank_ti",      sprag:"y", v:["i","y"], p:"lankyti — y (ilgasis)" },
+  { z:"mok_ti",       sprag:"y", v:["i","y"], p:"mokyti — y (ilgasis)" },
+  { z:"rod_ti",       sprag:"y", v:["i","y"], p:"rodyti — y (ilgasis)" },
+  { z:"dar_davo",     sprag:"y", v:["i","y"], p:"darydavo — y (ilgasis)" },
+  { z:"sak_davo",     sprag:"y", v:["i","y"], p:"sakydavo — y (ilgasis)" },
+  { z:"raš_davo",     sprag:"y", v:["i","y"], p:"rašydavo — y (ilgasis)" },
+  { z:"mat_davo",     sprag:"y", v:["i","y"], p:"matydavo — y (ilgasis)" },
+  { z:"laik_davo",    sprag:"y", v:["i","y"], p:"laikydavo — y (ilgasis)" },
+
+  // ── papildomi ą žodžiai ──────────────────────────────────────
+  { z:"m_stis",       sprag:"ą", v:["a","ą"], p:"mąstis — ą (ilgasis)" },
+  { z:"m_slavojas",   sprag:"ą", v:["a","ą"], p:"mąslavojas → mąstytojas — ą" },
+  { z:"m_stytojas",   sprag:"ą", v:["a","ą"], p:"mąstytojas — ą (ilgasis)" },
+  { z:"m_slus",       sprag:"ą", v:["a","ą"], p:"mąslus — ą (ilgasis)" },
+  { z:"dr_sėti",      sprag:"ą", v:["a","ą"], p:"drąsėti — ą (ilgasis)" },
+  { z:"dr_sinti",     sprag:"ą", v:["a","ą"], p:"drąsinti — ą (ilgasis)" },
+  { z:"dr_sumas",     sprag:"ą", v:["a","ą"], p:"drąsumas — ą (ilgasis)" },
+  { z:"gr_ža",        sprag:"ą", v:["a","ą"], p:"grąža — ą (ilgasis)" },
+  { z:"gr_žinimas",   sprag:"ą", v:["a","ą"], p:"grąžinimas — ą (ilgasis)" },
+  { z:"gr_žyti",      sprag:"ą", v:["a","ą"], p:"grąžyti — ą (ilgasis)" },
+  { z:"s_augas",      sprag:"ą", v:["a","ą"], p:"sąaugas — ą (ilgasis)" },
+  { z:"s_šlavos",     sprag:"ą", v:["a","ą"], p:"sąšlavos — ą (ilgasis)" },
+  { z:"s_smauka",     sprag:"ą", v:["a","ą"], p:"sąsmauka — ą (ilgasis)" },
+  { z:"s_taka",       sprag:"ą", v:["a","ą"], p:"sątaka — ą (ilgasis)" },
+  { z:"s_varža",      sprag:"ą", v:["a","ą"], p:"sąvarža — ą (ilgasis)" },
+  { z:"s_žiningas",   sprag:"ą", v:["a","ą"], p:"sąžiningas — ą (ilgasis)" },
+  { z:"k_sneliuoti",  sprag:"ą", v:["a","ą"], p:"kąsneliuoti — ą (ilgasis)" },
+  { z:"r_stinis",     sprag:"ą", v:["a","ą"], p:"rąstinis — ą (ilgasis)" },
+  { z:"v_škaras",     sprag:"ą", v:["a","ą"], p:"vąškaras — ą (ilgasis)" },
+  { z:"v_šas",        sprag:"ą", v:["a","ą"], p:"vąšas — ą (ilgasis)" },
+  { z:"n_stai",       sprag:"ą", v:["a","ą"], p:"nąstai — ą (ilgasis)" },
+  { z:"sl_nkti",      sprag:"a", v:["a","ą"], p:"slankti — a (trumpasis)" },
+  { z:"dr_skomas",    sprag:"a", v:["a","ą"], p:"draskomas — a (trumpasis)" },
+
+  // ── papildomi e/ę žodžiai ────────────────────────────────────
+  { z:"t_stinumas",   sprag:"ę", v:["e","ę"], p:"tęstinumas — ę (nosinis ilgasis)" },
+  { z:"t_stinis",     sprag:"ę", v:["e","ę"], p:"tęstinis — ę (nosinis ilgasis)" },
+  { z:"t_stis",       sprag:"ę", v:["e","ę"], p:"tęstis — ę (nosinis ilgasis)" },
+  { z:"b_stant",      sprag:"ę", v:["e","ę"], p:"bęstant — ę (nosinis ilgasis)" },
+  { z:"sk_stantis",   sprag:"ę", v:["e","ę"], p:"skęstantis — ę (nosinis ilgasis)" },
+  { z:"šv_sti",       sprag:"ę", v:["e","ę"], p:"švęsti — ę (nosinis ilgasis)" },
+  { z:"šv_sdamas",    sprag:"ę", v:["e","ę"], p:"švęsdamas — ę (nosinis ilgasis)" },
+  { z:"tr_šti",       sprag:"ę", v:["e","ę"], p:"tręšti — ę (nosinis ilgasis)" },
+  { z:"tr_šiamas",    sprag:"ę", v:["e","ę"], p:"tręšiamas — ę (nosinis ilgasis)" },
+
+  // ── papildomi e/ė žodžiai ────────────────────────────────────
+  { z:"g_lė",         sprag:"ė", v:["e","ė"], p:"gėlė — ė (ilgasis)" },
+  { z:"l_lė",         sprag:"ė", v:["e","ė"], p:"lėlė — ė (ilgasis)" },
+  { z:"l_kštė",       sprag:"ė", v:["e","ė"], p:"lėkštė — ė (ilgasis)" },
+  { z:"s_kmė",        sprag:"ė", v:["e","ė"], p:"sėkmė — ė (ilgasis)" },
+  { z:"s_niai",       sprag:"ė", v:["e","ė"], p:"sėniai — ė (ilgasis)" },
+  { z:"š_šėlis",      sprag:"ė", v:["e","ė"], p:"šėšėlis — ė (ilgasis, 1-as)" },
+  { z:"t_vynė",       sprag:"ė", v:["e","ė"], p:"tėvynė — ė (ilgasis)" },
+  { z:"b_gdamas",     sprag:"ė", v:["e","ė"], p:"bėgdamas — ė (ilgasis)" },
+  { z:"r_gėti",       sprag:"e", v:["e","ė"], p:"regėti — e (trumpasis, 1-as)" },
+  { z:"v_sti",        sprag:"e", v:["e","ė"], p:"vesti — e (trumpasis)" },
+  { z:"d_šinė",       sprag:"e", v:["e","ė"], p:"dešinė — e (trumpasis)" },
+  { z:"g_lbėti",      sprag:"e", v:["e","ė"], p:"gelbėti — e (trumpasis, 1-as)" },
+  { z:"v_ja",         sprag:"e", v:["e","ė"], p:"veja — e (trumpasis)" },
+];
+
+const KIEK = 15;
+const LS_KEY = 'balsiai_edits'; // localStorage key
+
+let sarasas = [], idx = 0, taskai = 0, serija = 0, atsakyta = false;
+let removedWords = new Set();
+let flaggedWords = [];
+
+// ── Įkelti išsaugotus pakeitimus iš localStorage ──────────────
+function loadEdits() {
+  try {
+    const saved = localStorage.getItem(LS_KEY);
+    if (!saved) return;
+    const edits = JSON.parse(saved); // { deleted: [{z,sprag}], modified: [{oldZ, oldSprag, z, sprag, p}] }
+
+    // Ištrinti žodžiai
+    (edits.deleted || []).forEach(d => {
+      const i = KLAUSIMAI.findIndex(k => k.z === d.z && k.sprag === d.sprag);
+      if (i >= 0) KLAUSIMAI.splice(i, 1);
+    });
+
+    // Pakeisti žodžiai
+    (edits.modified || []).forEach(m => {
+      const i = KLAUSIMAI.findIndex(k => k.z === m.oldZ && k.sprag === m.oldSprag);
+      if (i >= 0) KLAUSIMAI[i] = { z: m.z, sprag: m.sprag, v: KLAUSIMAI[i].v, p: m.p };
+    });
+  } catch(e) { console.warn('loadEdits error', e); }
+}
+
+function saveDeleted(z, sprag) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    saved.deleted = saved.deleted || [];
+    if (!saved.deleted.find(d => d.z === z && d.sprag === sprag)) {
+      saved.deleted.push({ z, sprag });
+    }
+    localStorage.setItem(LS_KEY, JSON.stringify(saved));
+  } catch(e) {}
+}
+
+function saveModified(oldZ, oldSprag, newZ, newSprag, newP) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+    saved.modified = saved.modified || [];
+    // Remove old entry for this word if exists
+    saved.modified = saved.modified.filter(m => !(m.oldZ === oldZ && m.oldSprag === oldSprag));
+    saved.modified.push({ oldZ, oldSprag, z: newZ, sprag: newSprag, p: newP });
+    localStorage.setItem(LS_KEY, JSON.stringify(saved));
+  } catch(e) {}
+}
+
+// Įkelti iš karto
+loadEdits();
+
+function maiseArr(a) { return [...a].sort(() => Math.random()-.5); }
+
+function activeKlausimai() {
+  return KLAUSIMAI.filter(k => !removedWords.has(k.z + '|' + k.sprag));
+}
+
+function pradeti() {
+  const active = activeKlausimai();
+  sarasas = maiseArr(active).slice(0, KIEK);
+  idx = 0; taskai = 0; serija = 0; atsakyta = false;
+  flaggedWords = [];
+  document.getElementById('pts').textContent = 0;
+  document.getElementById('str').textContent = 0;
+  document.getElementById('gameDiv').style.display = 'block';
+  document.getElementById('resultDiv').classList.remove('show');
+  document.getElementById('flagBtn').classList.remove('flagged');
+  document.getElementById('lkzBtn').classList.remove('show');
+  document.getElementById('nextBtn').classList.remove('show');
+  rodytıKlausima();
+}
+
+function pilnasZodis(z, sprag) {
+  return z.replace('_', sprag);
+}
+
+function rodytıKlausima() {
+  if (idx >= KIEK) { rodytıRezultata(); return; }
+  atsakyta = false;
+  window._advancing = false;
+
+  const k = sarasas[idx];
+  document.getElementById('qNum').textContent = `${idx+1} / ${KIEK}`;
+  document.getElementById('progFill').style.width = `${(idx/KIEK)*100}%`;
+
+  // Rodyti žodį su spraga
+  const zodisEl = document.getElementById('zodisEl');
+  zodisEl.innerHTML = k.z.replace('_', '<span class="sprag" id="spragEl">_</span>');
+  zodisEl.className = 'zodis pop';
+
+  document.getElementById('klausEl').innerHTML =
+    `Kokia raidė priklauso žodžiui <strong>${k.z.replace('_','( )')}</strong>?`;
+
+  // LKŽ nuoroda
+  const zodis = pilnasZodis(k.z, k.sprag);
+  document.getElementById('lkzBtn').href = `http://lkz.lt/?zodis=${encodeURIComponent(zodis)}`;
+  document.getElementById('lkzBtn').textContent = `📖 Žiūrėti LKŽ žodyne`;
+
+  // Variantai (sumaišyti)
+  const choicesEl = document.getElementById('choicesEl');
+  choicesEl.innerHTML = '';
+  maiseArr(k.v).forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    const tipas = ilgasBalsis(r) ? '〰️ ilgasis' : '⚡ trumpasis';
+    btn.innerHTML = `${r}<span class="choice-label">${tipas}</span>`;
+    btn.onclick = () => atsakyti(r, k, btn);
+    choicesEl.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+  document.getElementById('lkzBtn').classList.remove('show');
+  document.getElementById('nextBtn').classList.remove('show');
+  const flagBtn = document.getElementById('flagBtn');
+  flagBtn.classList.remove('flagged');
+  // mark as flagged if already in list
+  const k2 = sarasas[idx];
+  if (k2 && flaggedWords.find(f => f.z === k2.z && f.sprag === k2.sprag)) {
+    flagBtn.classList.add('flagged');
+  }
+}
+
+function ilgasBalsis(r) {
+  return ['ą','ę','ė','į','ū','ų','y'].includes(r);
+}
+
+function atsakyti(pasir, k, btn) {
+  if (atsakyta) return;
+  atsakyta = true;
+
+  const teisingai = pasir === k.sprag;
+  const spragEl = document.getElementById('spragEl');
+  spragEl.textContent = k.sprag;
+
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const bRaide = b.textContent.trim().split('\n')[0].trim()[0]; // first char
+    // get raidė from button (first char of innerHTML text)
+    const raide = b.innerHTML.split('<')[0].trim();
+    if (raide === k.sprag) b.classList.add('correct');
+  });
+
+  if (teisingai) {
+    taskai++;
+    serija++;
+    btn.classList.add('correct');
+    spragEl.classList.add('teisingai');
+    const reakc = ['🎉 Teisingai!','✅ Puiku!','🌟 Šaunuolis!','👏 Labai gerai!','🎯 Taip!'];
+    showFeedback(reakc[Math.random()*reakc.length|0] + '  ' + k.p, 'ok');
+    if (serija % 5 === 0) konfeti();
+  } else {
+    serija = 0;
+    btn.classList.add('wrong');
+    spragEl.classList.add('neteisingai');
+    showFeedback('❌ Neteisingai!  Teisingas atsakymas: ' + k.p, 'err');
+    document.getElementById('zodisEl').className = 'zodis shake';
+  }
+
+  document.getElementById('pts').textContent = taskai;
+  document.getElementById('str').textContent = serija;
+  document.getElementById('lkzBtn').classList.add('show');
+  document.getElementById('nextBtn').classList.add('show');
+
+  clearTimeout(window._nextTimer);
+  window._lkzClicked = false;
+  window._flagClicked = false;
+  if (teisingai) {
+    window._nextTimer = setTimeout(() => {
+      if (!window._lkzClicked && !window._flagClicked) {
+        eitiToliau();
+      }
+    }, 2000);
+  }
+}
+
+function eitiToliau() {
+  if (window._advancing) return;
+  window._advancing = true;
+  clearTimeout(window._nextTimer);
+  idx++;
+  rodytıKlausima();
+}
+
+function showFeedback(txt, cls) {
+  const fb = document.getElementById('feedback');
+  fb.textContent = txt;
+  fb.className = 'feedback show ' + cls;
+}
+
+function rodytıRezultata() {
+  document.getElementById('gameDiv').style.display = 'none';
+  document.getElementById('progFill').style.width = '100%';
+  const res = document.getElementById('resultDiv');
+  res.classList.add('show');
+
+  const proc = Math.round(taskai/KIEK*100);
+  let emoji, title, msg;
+  if (proc>=90) { emoji='🏆'; title='Puikiai!'; msg='Tu tikras balsių meistras! 🌟'; }
+  else if (proc>=70) { emoji='🎉'; title='Labai gerai!'; msg='Dar truputis ir būsi ekspertas!'; }
+  else if (proc>=50) { emoji='👍'; title='Neblogai!'; msg='Pasimokyk dar — tikrai pavyks!'; }
+  else { emoji='💪'; title='Stenkis!'; msg='Perskaityk taisykles ir bandyk dar kartą!'; }
+
+  document.getElementById('resEmoji').textContent = emoji;
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resScore').textContent = `${taskai}/${KIEK}`;
+  document.getElementById('resMsg').textContent = msg;
+
+  const flaggedList = document.getElementById('flaggedList');
+  const flaggedUl = document.getElementById('flaggedUl');
+  if (flaggedWords.length > 0) {
+    renderFlaggedList();
+    flaggedList.classList.add('show');
+  } else {
+    flaggedList.classList.remove('show');
+  }
+
+  if (proc >= 70) konfeti();
+}
+
+function flagWord() {
+  const k = sarasas[idx];
+  if (!k) return;
+  const flagBtn = document.getElementById('flagBtn');
+  const alreadyFlagged = flaggedWords.find(f => f.z === k.z && f.sprag === k.sprag);
+  if (alreadyFlagged) {
+    // unflag
+    flaggedWords = flaggedWords.filter(f => !(f.z === k.z && f.sprag === k.sprag));
+    flagBtn.classList.remove('flagged');
+    showToast('🏳️ Žymėjimas atšauktas');
+  } else {
+    flaggedWords.push({ z: k.z, sprag: k.sprag, p: k.p });
+    flagBtn.classList.add('flagged');
+    showToast(`🚩 Pažymėta: „${k.z.replace('_','(?)')}"  (iš viso: ${flaggedWords.length})`);
+  }
+}
+
+function showToast(txt) {
+  const toast = document.getElementById('reportToast');
+  toast.textContent = txt;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function renderFlaggedList() {
+  const ul = document.getElementById('flaggedUl');
+  ul.innerHTML = flaggedWords.map((f, i) => `
+    <li>
+      <span class="flagged-item-text">🚩 <strong>${f.z.replace('_','(?)')}</strong> — ${f.p}</span>
+      <span class="flagged-item-btns">
+        <button class="fi-btn edit" onclick="openEdit(${i})">✏️ Taisyti</button>
+        <button class="fi-btn del"  onclick="deleteIdx(${i})">🗑️</button>
+      </span>
+    </li>`).join('');
+}
+
+let editingIdx = -1;
+
+function openEdit(i) {
+  editingIdx = i;
+  const f = flaggedWords[i];
+  document.getElementById('editZ').value = f.z;
+  document.getElementById('editSprag').value = f.sprag;
+  document.getElementById('editP').value = f.p;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('show');
+  editingIdx = -1;
+}
+
+function saveEdit() {
+  if (editingIdx < 0) return;
+  const z     = document.getElementById('editZ').value.trim();
+  const sprag = document.getElementById('editSprag').value.trim();
+  const p     = document.getElementById('editP').value.trim();
+  if (!z || !sprag) { showToast('⚠️ Užpildyk žodį ir raidę!'); return; }
+
+  const old = flaggedWords[editingIdx];
+  const oldZ = old.z, oldSprag = old.sprag;
+
+  // Update in flaggedWords
+  flaggedWords[editingIdx] = { z, sprag, v: old.v || [sprag], p };
+
+  // Update in KLAUSIMAI array
+  const ki = KLAUSIMAI.findIndex(k => k.z === oldZ && k.sprag === oldSprag);
+  if (ki >= 0) {
+    KLAUSIMAI[ki] = { z, sprag, v: KLAUSIMAI[ki].v, p };
+  }
+
+  // Išsaugoti visam laikui
+  saveModified(oldZ, oldSprag, z, sprag, p);
+
+  closeModal();
+  renderFlaggedList();
+  showToast('✅ Išsaugota visam laikui!');
+}
+
+function deleteIdx(i) {
+  const f = flaggedWords[i];
+  // Remove from KLAUSIMAI permanently
+  const ki = KLAUSIMAI.findIndex(k => k.z === f.z && k.sprag === f.sprag);
+  if (ki >= 0) KLAUSIMAI.splice(ki, 1);
+
+  // Išsaugoti visam laikui
+  saveDeleted(f.z, f.sprag);
+
+  flaggedWords.splice(i, 1);
+  renderFlaggedList();
+  if (flaggedWords.length === 0) document.getElementById('flaggedList').classList.remove('show');
+  showToast('🗑️ Žodis ištrintas visam laikui');
+}
+
+function deleteWord() {
+  if (editingIdx < 0) return;
+  deleteIdx(editingIdx);
+  closeModal();
+}
+
+function copyFlagged() {
+  const lines = flaggedWords.map(f => `{ z:"${f.z}", sprag:"${f.sprag}", p:"${f.p}" }`).join('\n');
+  navigator.clipboard.writeText(lines).then(() => showToast('📋 Nukopijuota!'));
+}
+
+function restart() { pradeti(); }
+
+function konfeti() {
+  const c = document.getElementById('konfeti');
+  const spalvos = ['#6C5CE7','#4ECDC4','#FFD93D','#FF6B6B','#a29bfe','#fd79a8','#00b894'];
+  for (let i=0;i<50;i++) {
+    const d = document.createElement('div');
+    d.className = 'kd';
+    const s = 8 + Math.random()*10;
+    d.style.cssText = `
+      left:${Math.random()*100}%;
+      width:${s}px; height:${s}px;
+      background:${spalvos[Math.random()*spalvos.length|0]};
+      animation-delay:${Math.random()*.8}s;
+      animation-duration:${1.5+Math.random()*.8}s;
+      border-radius:${Math.random()>.5?'50%':'3px'};
+    `;
+    c.appendChild(d);
+    setTimeout(()=>d.remove(), 3000);
+  }
+}
+
+pradeti();
+
+document.getElementById('modalBg').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modalBg')) closeModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === 'ArrowRight') {
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn.classList.contains('show')) {
+      eitiToliau();
+    }
+  }
+});
+</script>
+</body>
+</html>
