@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lenktynės</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a0533;
+    font-family: 'Press Start 2P', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    color: #fff;
+    image-rendering: pixelated;
+  }
+
+  /* Retro scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.15),
+      rgba(0,0,0,0.15) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Stars */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 10%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 60%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 25%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 85%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 45% 50%, #ffaaff 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a.back-btn {
+    position: fixed;
+    top: 12px; left: 12px;
+    background: #000;
+    color: #ff0;
+    padding: 6px 12px;
+    text-decoration: none;
+    font-size: 8px;
+    border: 3px solid #ff0;
+    z-index: 100;
+    image-rendering: pixelated;
+  }
+  a.back-btn:hover { background: #ff0; color: #000; }
+
+  h1 {
+    font-size: 1.1rem;
+    color: #ff0;
+    text-shadow:
+      3px 3px 0 #f0f,
+      6px 6px 0 #0ff;
+    margin-bottom: 0.6rem;
+    z-index: 1;
+    letter-spacing: 4px;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0.7; }
+  }
+
+  .hud {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.6rem;
+    z-index: 1;
+    font-size: 0.45rem;
+    color: #0ff;
+  }
+  .hud span { color: #ff0; }
+
+  canvas {
+    border: 4px solid #f0f;
+    box-shadow:
+      0 0 0 4px #0ff,
+      0 0 30px #f0f,
+      0 0 60px rgba(255,0,255,0.3);
+    display: block;
+    z-index: 1;
+    image-rendering: pixelated;
+  }
+
+  .canvas-wrap { position: relative; z-index: 1; }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26,5,51,0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    z-index: 10;
+    border: 2px solid #f0f;
+  }
+
+  .overlay h2 {
+    font-size: 0.9rem;
+    color: #ff0;
+    text-shadow: 3px 3px 0 #f0f;
+    letter-spacing: 3px;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  .overlay p {
+    font-size: 0.45rem;
+    color: #0ff;
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 2;
+  }
+
+  .btn {
+    background: #000;
+    color: #ff0;
+    border: 3px solid #ff0;
+    padding: 10px 20px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.1s;
+    image-rendering: pixelated;
+  }
+  .btn:hover {
+    background: #ff0;
+    color: #000;
+    box-shadow: 0 0 20px #ff0;
+  }
+
+  .mobile-btns {
+    display: none;
+    gap: 1rem;
+    margin-top: 0.8rem;
+    z-index: 1;
+  }
+  .mob-btn {
+    background: #000;
+    border: 3px solid #f0f;
+    color: #f0f;
+    padding: 12px 24px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    touch-action: manipulation;
+    image-rendering: pixelated;
+  }
+  .mob-btn:active { background: #f0f; color: #000; }
+
+  @media (max-width: 500px) {
+    .mobile-btns { display: flex; }
+    h1 { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<a class="back-btn" href="../../index.html">← GRĮŽTI</a>
+<h1>🏎 LENKTYNĖS</h1>
+
+<div class="hud">
+  GREITIS: <span id="speedEl">0</span> &nbsp;|&nbsp;
+  TAŠKAI: <span id="scoreEl">0</span> &nbsp;|&nbsp;
+  GYVYBĖS: <span id="livesEl">♥♥♥</span>
+</div>
+
+<div class="canvas-wrap">
+  <canvas id="c" width="360" height="540"></canvas>
+  <div class="overlay" id="overlay">
+    <h2>LENKTYNĖS</h2>
+    <p>← → ARBA A D — VAIRUOTI<br>VENK PRIEŠŲ!</p>
+    <button class="btn" onclick="startGame()">► PRADĖTI</button>
+  </div>
+</div>
+
+<div class="mobile-btns">
+  <button class="mob-btn" onpointerdown="keys.left=true" onpointerup="keys.left=false">◄</button>
+  <button class="mob-btn" onpointerdown="keys.right=true" onpointerup="keys.right=false">►</button>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const W = canvas.width, H = canvas.height;
+
+const LANE_COUNT = 4;
+const LANE_W = W / LANE_COUNT;
+const CAR_W = 36, CAR_H = 56;
+
+const keys = { left: false, right: false };
+let player, enemies, score, speed, lives, running, frame, roadY;
+let particles = [];
+let flashTimer = 0;
+
+// Retro pixel colors
+const ENEMY_COLORS = ['#ff2222','#ff8800','#ffff00','#00ff44','#ff44ff'];
+const PLAYER_COLOR = '#00ffff';
+
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowLeft'||e.key==='a') keys.left=true;
+  if (e.key==='ArrowRight'||e.key==='d') keys.right=true;
+});
+document.addEventListener('keyup', e => {
+  if (e.key==='ArrowLeft'||e.key==='a') keys.left=false;
+  if (e.key==='ArrowRight'||e.key==='d') keys.right=false;
+});
+
+let touchX = null;
+canvas.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
+canvas.addEventListener('touchmove', e => {
+  if (!touchX) return;
+  const dx = e.touches[0].clientX - touchX;
+  if (dx > 10) { keys.right=true; keys.left=false; }
+  else if (dx < -10) { keys.left=true; keys.right=false; }
+}, {passive:true});
+canvas.addEventListener('touchend', () => { keys.left=false; keys.right=false; touchX=null; }, {passive:true});
+
+function laneX(l) { return l * LANE_W + LANE_W/2; }
+
+function startGame() {
+  document.getElementById('overlay').style.display = 'none';
+  player = { x: laneX(1), y: H-100, w: CAR_W, h: CAR_H };
+  enemies = []; particles = [];
+  score=0; speed=3; lives=3; running=true; frame=0; roadY=0;
+  document.getElementById('scoreEl').textContent = 0;
+  document.getElementById('speedEl').textContent = 60;
+  document.getElementById('livesEl').textContent = '♥♥♥';
+  if (window._gl) cancelAnimationFrame(window._gl);
+  loop();
+}
+
+function spawnEnemy() {
+  const lane = Math.floor(Math.random()*LANE_COUNT);
+  enemies.push({
+    x: laneX(lane), y: -CAR_H,
+    color: ENEMY_COLORS[Math.floor(Math.random()*ENEMY_COLORS.length)],
+    w: CAR_W, h: CAR_H
+  });
+}
+
+// Pixel car drawing
+function drawPixelCar(x, y, color, flip=false) {
+  const s = 4; // pixel size
+  // Car pixel map (9x14 grid)
+  const pixels = flip ? [
+    [0,0,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,1,0],
+    [0,1,0,1,1,1,0,1,0],
+    [0,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1],
+    [1,0,1,1,1,1,1,0,1],
+    [1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1],
+    [1,0,1,1,1,1,1,0,1],
+    [1,1,1,1,1,1,1,1,1],
+    [0,1,1,1,1,1,1,1,0],
+    [0,1,0,0,0,0,0,1,0],
+    [0,1,1,1,1,1,1,1,0],
+    [0,0,1,1,1,1,1,0,0],
+  ] : [
+    [0,0,1,1,1,1,1,0,0],
+    [0,1,1,1,1,1,1,1,0],
+    [0,1,0,0,0,0,0,1,0],
+    [0,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1],
+    [1,0,1,1,1,1,1,0,1],
+    [1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1],
+    [1,0,1,1,1,1,1,0,1],
+    [1,1,1,1,1,1,1,1,1],
+    [0,1,1,1,1,1,1,1,0],
+    [0,1,0,1,1,1,0,1,0],
+    [0,1,1,1,1,1,1,1,0],
+    [0,0,1,1,1,1,1,0,0],
+  ];
+
+  const pw = pixels[0].length * s;
+  const ph = pixels.length * s;
+  const ox = x - pw/2;
+  const oy = y - ph/2;
+
+  pixels.forEach((row, r) => {
+    row.forEach((v, c) => {
+      if (!v) return;
+      // Wheel pixels (col 0,1 or 7,8)
+      const isWheel = (c<=1 || c>=7) && (r>=4&&r<=5 || r>=8&&r<=9);
+      ctx.fillStyle = isWheel ? '#222' : color;
+      ctx.fillRect(ox + c*s, oy + r*s, s, s);
+    });
+  });
+
+  // Windshield highlight
+  ctx.fillStyle = flip ? 'rgba(255,100,100,0.6)' : 'rgba(100,255,255,0.5)';
+  ctx.fillRect(ox+2*s, oy+(flip?10:1)*s, 5*s, 2*s);
+}
+
+function drawRoad() {
+  // Sky gradient top
+  const sky = ctx.createLinearGradient(0,0,0,H*0.1);
+  sky.addColorStop(0,'#1a0533');
+  sky.addColorStop(1,'#2d0a50');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,W,H*0.1);
+
+  // Road
+  ctx.fillStyle = '#2a2a3a';
+  ctx.fillRect(0, H*0.1, W, H);
+
+  // Road stripes pattern
+  ctx.fillStyle = '#1e1e2e';
+  for(let i=0; i<H; i+=40) {
+    ctx.fillRect(0, i, W, 2);
+  }
+
+  // Sidewalks
+  ctx.fillStyle = '#3a1a5a';
+  ctx.fillRect(0, 0, 18, H);
+  ctx.fillRect(W-18, 0, 18, H);
+
+  // Neon edge lines
+  ctx.strokeStyle = '#f0f';
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 10; ctx.shadowColor = '#f0f';
+  ctx.beginPath(); ctx.moveTo(18,0); ctx.lineTo(18,H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W-18,0); ctx.lineTo(W-18,H); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Lane dashes
+  roadY = (roadY + speed) % 48;
+  for (let l=1; l<LANE_COUNT; l++) {
+    const x = l*LANE_W;
+    ctx.strokeStyle = 'rgba(255,255,0,0.25)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([24,24]);
+    ctx.lineDashOffset = -roadY;
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Ground markings
+  ctx.fillStyle = 'rgba(255,255,0,0.06)';
+  for(let i=0; i<3; i++) {
+    ctx.fillRect(18+i*LANE_W, 0, 2, H);
+  }
+}
+
+function drawParticles() {
+  particles.forEach((p, i) => {
+    ctx.globalAlpha = p.life / p.maxLife;
+    ctx.fillStyle = p.color;
+    // Pixel particles
+    ctx.fillRect(Math.round(p.x), Math.round(p.y), 4, 4);
+    p.x += p.vx; p.y += p.vy; p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  });
+  ctx.globalAlpha = 1;
+}
+
+function explode(x, y, color) {
+  for (let i=0; i<20; i++) {
+    const angle = (i/20)*Math.PI*2;
+    const spd = 1+Math.random()*4;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*spd,
+      vy: Math.sin(angle)*spd,
+      color: Math.random()>0.5 ? color : '#ffff00',
+      life: 20+Math.random()*20,
+      maxLife: 40,
+    });
+  }
+}
+
+function collides(a, b) {
+  return Math.abs(a.x-b.x) < (a.w/2+b.w/2-8) &&
+         Math.abs(a.y-b.y) < (a.h/2+b.h/2-8);
+}
+
+let invincible = 0;
+
+function loop() {
+  if (!running) return;
+  frame++;
+
+  // Player move
+  const mv = 4;
+  if (keys.left && player.x > LANE_W/2+18) player.x -= mv;
+  if (keys.right && player.x < W-LANE_W/2-18) player.x += mv;
+
+  speed = 3 + Math.floor(score/200)*0.4;
+  score++;
+
+  if (frame%60===0) {
+    document.getElementById('scoreEl').textContent = score;
+    document.getElementById('speedEl').textContent = Math.round(60+score/20);
+  }
+
+  const spawnRate = Math.max(45, 100-Math.floor(score/300)*5);
+  if (frame%spawnRate===0) spawnEnemy();
+
+  for (let i=enemies.length-1; i>=0; i--) {
+    enemies[i].y += speed;
+    if (enemies[i].y > H+CAR_H) { enemies.splice(i,1); continue; }
+    if (invincible<=0 && collides(player, enemies[i])) {
+      explode(enemies[i].x, enemies[i].y, enemies[i].color);
+      enemies.splice(i,1);
+      lives--;
+      invincible = 100;
+      document.getElementById('livesEl').textContent = ['♥♥♥','♥♥ ','♥  ','   '][Math.max(0,3-lives)];
+      if (lives<=0) { endGame(); return; }
+    }
+  }
+  if (invincible>0) invincible--;
+
+  // Draw
+  drawRoad();
+  drawParticles();
+  enemies.forEach(e => drawPixelCar(e.x, e.y, e.color, true));
+
+  // Flash on hit
+  if (invincible<=0 || Math.floor(invincible/5)%2===0) {
+    drawPixelCar(player.x, player.y, PLAYER_COLOR, false);
+  }
+
+  // Score popup pixels
+  if (score%500===0 && score>0) {
+    flashTimer = 30;
+  }
+  if (flashTimer>0) {
+    ctx.fillStyle = `rgba(255,255,0,${flashTimer/30})`;
+    ctx.font = '8px "Press Start 2P"';
+    ctx.textAlign = 'center';
+    ctx.fillText('+BONUS!', W/2, H/2);
+    flashTimer--;
+  }
+
+  window._gl = requestAnimationFrame(loop);
+}
+
+function endGame() {
+  running = false;
+  const ov = document.getElementById('overlay');
+  ov.innerHTML = `
+    <h2>GAME OVER</h2>
+    <p>TAŠKAI: <span style="color:#ff0">${score}</span><br><br>GREITIS: <span style="color:#ff0">${Math.round(60+score/20)}</span></p>
+    <button class="btn" onclick="startGame()">► DAR KARTĄ</button>
+  `;
+  ov.style.display = 'flex';
+}
+
+drawRoad();
+</script>
+</body>
+</html>
