@@ -1,3 +1,67 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<title>Tic Tac Toe vs AI</title>
+
+<style>
+body{
+margin:0;
+background:#0f172a;
+display:flex;
+flex-direction:column;
+align-items:center;
+font-family:Arial;
+color:white;
+}
+
+h1{
+margin:20px;
+}
+
+#board{
+display:grid;
+grid-template-columns:repeat(3,120px);
+gap:10px;
+}
+
+.cell{
+width:120px;
+height:120px;
+background:#1e293b;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:50px;
+cursor:pointer;
+border-radius:10px;
+user-select:none;
+}
+
+.cell:hover{
+background:#334155;
+}
+
+#status{
+margin:15px;
+font-size:20px;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#22c55e;
+color:white;
+font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
 <a href="../../index.html" style="
   position: fixed;
   top: 16px;
@@ -11,3 +75,163 @@
   font-size: 14px;
   z-index:9999;
 ">← Grįžti</a>
+
+<h1>❌⭕ Kryžiukai nuliukai prieš DI</h1>
+
+<div id="status">Tavo ėjimas (❌)</div>
+
+<div id="board"></div>
+
+<button onclick="reset()">Restart</button>
+
+<script>
+
+const board=document.getElementById("board");
+const status=document.getElementById("status");
+
+let cells=[];
+let gameOver=false;
+
+/* sukuriam lentą */
+for(let i=0;i<9;i++){
+
+const div=document.createElement("div");
+div.classList.add("cell");
+div.dataset.index=i;
+
+div.addEventListener("click",playerMove);
+
+board.appendChild(div);
+cells.push("");
+
+}
+
+/* PLAYER */
+function playerMove(e){
+
+let i=e.target.dataset.index;
+
+if(gameOver || cells[i] !== "") return;
+
+cells[i]="X";
+e.target.textContent="❌";
+
+if(checkWin("X")){
+status.textContent="Tu laimėjai! 🎉";
+gameOver=true;
+return;
+}
+
+if(isDraw()){
+status.textContent="Lygiosios!";
+gameOver=true;
+return;
+}
+
+status.textContent="AI galvoja...";
+setTimeout(aiMove,400);
+}
+
+/* AI */
+function aiMove(){
+
+let move=bestMove();
+
+if(move===-1) return;
+
+cells[move]="O";
+board.children[move].textContent="⭕";
+
+if(checkWin("O")){
+status.textContent="AI laimėjo 🤖";
+gameOver=true;
+return;
+}
+
+if(isDraw()){
+status.textContent="Lygiosios!";
+gameOver=true;
+return;
+}
+
+status.textContent="Tavo ėjimas (❌)";
+}
+
+/* AI logika */
+function bestMove(){
+
+// 1. laimėti jei gali
+for(let i=0;i<9;i++){
+if(cells[i]===""){
+cells[i]="O";
+if(checkWin("O")){
+cells[i]="";
+return i;
+}
+cells[i]="";
+}
+}
+
+// 2. blokuoti žaidėją
+for(let i=0;i<9;i++){
+if(cells[i]===""){
+cells[i]="X";
+if(checkWin("X")){
+cells[i]="";
+return i;
+}
+cells[i]="";
+}
+}
+
+// 3. centras
+if(cells[4]==="") return 4;
+
+// 4. kampai
+let corners=[0,2,6,8];
+for(let c of corners){
+if(cells[c]==="") return c;
+}
+
+// 5. bet kas
+for(let i=0;i<9;i++){
+if(cells[i]==="") return i;
+}
+
+return -1;
+}
+
+/* laimėjimai */
+function checkWin(p){
+
+const win=[
+[0,1,2],[3,4,5],[6,7,8],
+[0,3,6],[1,4,7],[2,5,8],
+[0,4,8],[2,4,6]
+];
+
+return win.some(c=>{
+return c.every(i=>cells[i]===p);
+});
+}
+
+/* lygiųjų tikrinimas */
+function isDraw(){
+return cells.every(c=>c!=="");
+}
+
+/* restart */
+function reset(){
+cells.fill("");
+gameOver=false;
+status.textContent="Tavo ėjimas (❌)";
+
+for(let i=0;i<9;i++){
+board.children[i].textContent="";
+}
+}
+
+</script>
+
+</body>
+</html>
