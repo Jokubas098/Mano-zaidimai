@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piano Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ── INTRO ── */
+#intro{
+  font-family:'DM Sans',sans-serif;
+  background:#f5f4f0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+}
+.intro-card{
+  background:#fff;
+  border-radius:24px;
+  border:0.5px solid #ddd;
+  padding:3rem 2.5rem;
+  max-width:460px;
+  width:100%;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1.5rem;
+}
+.intro-icon{font-size:56px;line-height:1}
+.intro-title{font-family:'DM Serif Display',serif;font-size:30px;color:#1a1a1a}
+.intro-sub{font-size:15px;color:#666;line-height:1.6;max-width:320px}
+.intro-question{font-size:17px;font-weight:500;color:#1a1a1a}
+.intro-btns{display:flex;flex-direction:column;gap:12px;width:100%}
+.intro-btn{
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  font-weight:500;
+  padding:16px 24px;
+  border-radius:14px;
+  cursor:pointer;
+  border:0.5px solid #ddd;
+  background:#fff;
+  color:#1a1a1a;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  transition:background .15s, border-color .15s;
+  text-align:left;
+}
+.intro-btn:hover{background:#f5f4f0}
+.intro-btn.yes{border-color:#185FA5;background:#EBF4FD}
+.intro-btn.yes:hover{background:#d6eaf8}
+.intro-btn.no{border-color:#3B6D11;background:#EAF3DE}
+.intro-btn.no:hover{background:#d6ecbf}
+.intro-btn-icon{font-size:28px;flex-shrink:0}
+.intro-btn-text{}
+.intro-btn-title{font-size:15px;font-weight:500;color:#1a1a1a}
+.intro-btn-desc{font-size:12px;color:#888;margin-top:2px}
+
+/* ── SHARED ── */
+#pq-app, #pp-app{display:none}
+
+/* ══════════════════════════════════════════════
+   PIANO QUEST
+══════════════════════════════════════════════ */
+#pq-app{
+  font-family:'DM Sans',sans-serif;
+  background:#0d0d14;
+  color:#e8e6f0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-bottom:48px;
+}
+#pq-app *,#pq-app *::before,#pq-app *::after{box-sizing:border-box}
+.pq-header{width:100%;padding:22px 40px 16px;border-bottom:1px solid #2a2a45;margin-bottom:24px;display:flex;align-items:center;gap:16px}
+.pq-header h1{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;color:#e8e6f0}
+.pq-header small{font-size:13px;color:#6b6890;font-style:italic}
+.pq-back{font-size:12px;color:#6b6890;cursor:pointer;margin-left:auto;padding:6px 14px;border:1px solid #2a2a45;border-radius:8px;background:none;font-family:'DM Sans',sans-serif}
+.pq-back:hover{background:#1a1a2e;color:#e8e6f0}
+.pq-wrap{width:100%;max-width:960px;padding:0 24px;display:flex;flex-direction:column;gap:16px}
+.pq-library{background:#13131f;border:1px solid #2a2a45;border-radius:12px;overflow:hidden}
+.pq-lib-header{padding:12px 16px;font-size:13px;color:#6b6890;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #2a2a45;display:flex;align-items:center;justify-content:space-between}
+.pq-search{background:#1a1a2e;border:1px solid #2a2a45;border-radius:6px;padding:5px 10px;color:#e8e6f0;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:180px}
+.pq-lib-body{max-height:240px;overflow-y:auto}
+.pq-lib-body::-webkit-scrollbar{width:4px}
+.pq-lib-body::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:2px}
+.pq-cat{padding:8px 16px 4px;font-size:10px;color:#6b6890;text-transform:uppercase;letter-spacing:1px;font-family:monospace}
+.pq-song{padding:9px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;border-left:3px solid transparent;transition:background .1s}
+.pq-song:hover{background:#1a1a2e}
+.pq-song.active{background:#1a1a2e;border-left-color:#8b7cf6}
+.pq-song-title{font-size:14px;flex:1}
+.pq-song-sub{font-size:11px;color:#6b6890}
+.pq-song-diff{font-size:10px;font-family:monospace;padding:2px 7px;border-radius:4px;background:#1a1a2e;color:#6b6890}
+.pq-song.active .pq-song-diff{background:#3c3480;color:#8b7cf6}
+.diff-1{color:#4ade80!important}.diff-2{color:#fbbf24!important}.diff-3{color:#f87171!important}
+.pq-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pq-btn{padding:10px 22px;border-radius:8px;border:1px solid #2a2a45;background:#13131f;color:#e8e6f0;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer}
+.pq-btn:hover{background:#1a1a2e}
+.pq-btn.primary{background:#3c3480;border-color:#8b7cf6;color:#ddd8ff;font-size:16px;padding:11px 32px;font-weight:500}
+.pq-btn.primary:hover{background:#4c429a}
+.pq-btn.running{background:#133020;border-color:#4ade80;color:#4ade80}
+.pq-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pq-stat{background:#13131f;border:1px solid #2a2a45;border-radius:10px;padding:12px 16px}
+.pq-stat-l{font-size:10px;color:#6b6890;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-family:monospace}
+.pq-stat-v{font-size:22px;font-weight:600;font-family:monospace}
+.pq-sheet{background:#13131f;border:1px solid #2a2a45;border-radius:12px;padding:18px 14px 12px;overflow-x:auto}
+.pq-sheet::-webkit-scrollbar{height:4px}
+.pq-sheet::-webkit-scrollbar-thumb{background:#2a2a45;border-radius:2px}
+.pq-statusbox{background:#13131f;border:1px solid #2a2a45;border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:16px}
+#pq-det{font-size:36px;font-weight:700;color:#8b7cf6;font-family:monospace;min-width:56px;text-align:center}
+.pq-si{flex:1}
+#pq-sm{font-size:14px}
+#pq-ss{font-size:12px;color:#6b6890;font-family:monospace;margin-top:2px}
+.pq-vol-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.pq-vol-label{font-size:10px;color:#6b6890;font-family:monospace}
+.pq-vol-outer{width:120px;height:12px;background:#1a1a2e;border-radius:6px;overflow:hidden;border:1px solid #2a2a45}
+#pq-vol-inner{height:100%;width:0%;border-radius:6px;background:#4ade80}
+#pq-vol-inner.low{background:#f87171}
+#pq-freq-txt{font-size:11px;color:#6b6890;font-family:monospace;text-align:right}
+.pq-fb{border-radius:10px;padding:14px 20px;text-align:center;font-size:15px;font-weight:600;border:1px solid #2a2a45;background:#1a1a2e;color:#6b6890}
+.pq-fb.ok{background:#0f2b1a;border-color:#4ade80;color:#4ade80}
+.pq-fb.err{background:#2b0f0f;border-color:#f87171;color:#f87171}
+.pq-fb.win{background:#1f1a0a;border-color:#fbbf24;color:#fbbf24}
+#pq-nxt{text-align:center;font-size:13px;color:#6b6890}
+#pq-nxt b{color:#8b7cf6;font-size:16px}
+.pq-erbox{background:#2b0f0f;border:1px solid #f87171;border-radius:10px;padding:12px 18px;color:#f87171;font-size:14px;display:none}
+.pq-dbg{background:#13131f;border:1px solid #2a2a45;border-radius:10px;padding:10px 16px;font-family:monospace;font-size:12px;color:#6b6890;line-height:1.8}
+.pq-dbg b{color:#e8e6f0}
+
+/* ══════════════════════════════════════════════
+   PIANO PLAY
+══════════════════════════════════════════════ */
+#pp-app{
+  font-family:'DM Sans',sans-serif;
+  background:#f5f4f0;
+  min-height:100vh;
+  justify-content:center;
+  padding:2rem 1rem;
+}
+#pp-app *,#pp-app *::before,#pp-app *::after{box-sizing:border-box}
+.pp-inner{width:100%;max-width:720px;margin:0 auto}
+.pp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.pp-title{font-family:'DM Serif Display',serif;font-size:28px;color:#1a1a1a}
+.pp-score-bar{display:flex;gap:10px;align-items:center;font-size:13px;color:#666}
+.pp-score-val{font-size:18px;font-weight:500;color:#1a1a1a}
+.pp-streak{background:#EAF3DE;color:#3B6D11;padding:3px 12px;border-radius:999px;font-size:13px;font-weight:500}
+.pp-song-info{background:#fff;border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;border:0.5px solid #ddd}
+.pp-song-name{font-weight:500;font-size:16px;color:#1a1a1a}
+.pp-song-meta{font-size:12px;color:#888;margin-top:2px}
+.pp-progress-bar{width:200px;height:5px;background:#e8e8e8;border-radius:3px;margin-top:8px}
+.pp-progress-fill{height:5px;background:#378ADD;border-radius:3px;transition:width 0.3s}
+.pp-song-nav{display:flex;gap:6px}
+.pp-mode-switcher{display:flex;gap:6px;justify-content:center;margin-bottom:1rem}
+.pp-mode-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:6px 18px;border-radius:999px;border:0.5px solid #ccc;background:#fff;cursor:pointer;color:#555;transition:all .15s}
+.pp-mode-btn.active{background:#378ADD;color:#fff;border-color:#185FA5}
+.pp-mode-btn:hover:not(.active){background:#f0f0f0}
+.pp-info-row{background:#fff;border-radius:10px;padding:8px 16px;font-size:13px;color:#666;text-align:center;margin-bottom:8px;border:0.5px solid #e8e8e8}
+.pp-falling-area{width:100%;height:110px;position:relative;overflow:hidden;background:#fff;border-radius:12px;margin-bottom:10px;border:0.5px solid #e0e0e0}
+.pp-fn{position:absolute;border-radius:5px;background:#378ADD;opacity:0.9;font-size:10px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:500}
+.pp-fn.black-fn{background:#185FA5}
+.pp-fn.hit{background:#639922;opacity:0.5}
+.pp-feedback{text-align:center;height:34px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;margin:6px 0;gap:6px;color:#888}
+.pp-feedback.ok{color:#3B6D11}
+.pp-feedback.bad{color:#A32D2D}
+.pp-piano-section{background:#fff;border-radius:16px;padding:1.25rem;border:0.5px solid #ddd;margin-bottom:1rem}
+.pp-piano-wrap{overflow-x:auto;padding-bottom:4px}
+.pp-piano{display:flex;position:relative;height:165px;user-select:none;width:max-content;margin:0 auto}
+.pp-key{position:relative;border:0.5px solid #bbb;border-radius:0 0 6px 6px;cursor:pointer;transition:background .07s,transform .07s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px}
+.pp-key.white{width:44px;height:155px;background:#fafafa;z-index:1;margin:0 1px;box-shadow:0 2px 4px rgba(0,0,0,0.08)}
+.pp-key.black{width:28px;height:96px;background:#222;z-index:2;margin:0 -14px;border-color:#111;color:#eee}
+.pp-key.white:hover{background:#E6F1FB}
+.pp-key.black:hover{background:#444}
+.pp-key.white.pressed{background:#B5D4F4;transform:translateY(2px)}
+.pp-key.black.pressed{background:#185FA5;transform:translateY(2px)}
+.pp-key.correct{background:#C0DD97!important;transform:translateY(1px)}
+.pp-key.black.correct{background:#3B6D11!important}
+.pp-key.wrong{background:#F7C1C1!important}
+.pp-key.black.wrong{background:#A32D2D!important}
+.pp-key-label{font-size:9px;color:#aaa;pointer-events:none;font-family:'DM Sans',sans-serif}
+.pp-key.black .pp-key-label{color:#888;font-size:8px}
+.pp-note-hint{position:absolute;top:10px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;pointer-events:none;z-index:10;left:50%;transform:translateX(-50%);color:#fff;background:#378ADD;animation:pp-pulse 0.9s ease-in-out infinite}
+@keyframes pp-pulse{0%,100%{box-shadow:0 0 0 0 rgba(55,138,221,0.5)}50%{box-shadow:0 0 0 8px rgba(55,138,221,0)}}
+.pp-legend{display:flex;gap:14px;font-size:12px;color:#888;margin-top:10px;justify-content:center;flex-wrap:wrap}
+.pp-legend span{display:flex;align-items:center;gap:4px}
+.pp-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.pp-controls{display:flex;gap:8px;justify-content:center;margin-top:1rem}
+.pp-back{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;padding:8px 20px;border:0.5px solid #ccc;background:#fff;color:#333}
+.pp-back:hover{background:#f0f0f0}
+.pp-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;padding:8px 20px;transition:background .15s,transform .1s;border:0.5px solid #ccc;background:#fff;color:#333}
+.pp-btn:hover{background:#f0f0f0}
+.pp-btn:active{transform:scale(0.97)}
+.pp-btn.primary{background:#378ADD;color:#fff;border-color:#185FA5}
+.pp-btn.primary:hover{background:#185FA5}
+.pp-kb-hint{text-align:center;font-size:11px;color:#bbb;margin-top:8px}
+</style>
+</head>
+<body>
+
+<a href="../../index.html" style="
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: sans-serif;
+  font-size: 14px;
+  z-index: 9999;
+">← Grįžti</a>
+
+<!-- ══ INTRO ══════════════════════════════════════════════════════════ -->
+<div id="intro">
+  <div class="intro-card">
+    <div class="intro-icon">🎹</div>
+    <div>
+      <div class="intro-title">Piano Quest</div>
+    </div>
+    <div class="intro-sub">Mokykis groti pianinu žaisdamas. Pasirink kaip nori mokytis:</div>
+    <div class="intro-question">Ar turi pianino klaviatūrą?</div>
+    <div class="intro-btns">
+      <button class="intro-btn yes" onclick="goTo('pq')">
+        <span class="intro-btn-icon">🎹</span>
+        <div class="intro-btn-text">
+          <div class="intro-btn-title">Taip — turiu pianino klaviatūrą</div>
+          <div class="intro-btn-desc">Programa klausosi per mikrofoną ir atpažįsta natas</div>
+        </div>
+      </button>
+      <button class="intro-btn no" onclick="goTo('pp')">
+        <span class="intro-btn-icon">🖱️</span>
+        <div class="intro-btn-text">
+          <div class="intro-btn-title">Ne — grosite ekrane arba klaviatūra</div>
+          <div class="intro-btn-desc">Spausk klavišus pele, lietimo ekranu arba kompiuterio klaviatūra</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PIANO QUEST ════════════════════════════════════════════════════ -->
+<div id="pq-app">
+  <div class="pq-header">
+    <h1>🎹 Piano Quest</h1>
+    <small>groji tikru pianinu</small>
+    <button class="pq-back" onclick="goTo('intro')">← Grįžti</button>
+  </div>
+  <div class="pq-wrap">
+    <div class="pq-library">
+      <div class="pq-lib-header">
+        <span>Dainų biblioteka</span>
+        <input class="pq-search" id="pq-search" placeholder="Ieškoti..." oninput="pqFilterSongs()">
+      </div>
+      <div class="pq-lib-body" id="pq-lib-body"></div>
+    </div>
+    <div class="pq-row">
+      <button class="pq-btn primary" id="pq-start-btn" onclick="pqStartGame()">▶ Pradėti</button>
+      <button class="pq-btn" onclick="pqResetGame()">Iš naujo</button>
+      <span id="pq-selected-song" style="font-size:13px;color:#6b6890;font-style:italic"></span>
+    </div>
+    <div class="pq-erbox" id="pq-erbox"></div>
+    <div class="pq-stats">
+      <div class="pq-stat"><div class="pq-stat-l">Taškai</div><div class="pq-stat-v" id="pq-vsc">0</div></div>
+      <div class="pq-stat"><div class="pq-stat-l">Serija</div><div class="pq-stat-v" id="pq-vst">0</div></div>
+      <div class="pq-stat"><div class="pq-stat-l">Tikslumas</div><div class="pq-stat-v" id="pq-vac">—</div></div>
+      <div class="pq-stat"><div class="pq-stat-l">Progresas</div><div class="pq-stat-v" id="pq-vpr">0%</div></div>
+    </div>
+    <div class="pq-sheet"><canvas id="pq-staff" height="160"></canvas></div>
+    <div class="pq-statusbox">
+      <div id="pq-det">—</div>
+      <div class="pq-si">
+        <div id="pq-sm">Pasirink dainą ir paspausk ▶ Pradėti</div>
+        <div id="pq-ss">&nbsp;</div>
+      </div>
+      <div class="pq-vol-wrap">
+        <div class="pq-vol-label">Mikrofonas</div>
+        <div class="pq-vol-outer"><div id="pq-vol-inner"></div></div>
+        <div id="pq-freq-txt">&nbsp;</div>
+      </div>
+    </div>
+    <div class="pq-fb" id="pq-fb">Laukiama...</div>
+    <div id="pq-nxt">&nbsp;</div>
+    <div class="pq-dbg">Dažnis: <b id="pq-d-freq">—</b> Hz &nbsp;|&nbsp; Nota: <b id="pq-d-note">—</b> &nbsp;|&nbsp; RMS: <b id="pq-d-rms">—</b> &nbsp;|&nbsp; Stabilumas: <b id="pq-d-stab">0</b>/12</div>
+  </div>
+</div>
+
+<!-- ══ PIANO PLAY ═════════════════════════════════════════════════════ -->
+<div id="pp-app">
+  <div class="pp-inner">
+    <div class="pp-header">
+      <div class="pp-title">🎹 PianoPlay</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="pp-score-bar">
+          <span>Taškai:</span>
+          <span class="pp-score-val" id="pp-score">0</span>
+          <span class="pp-streak" id="pp-streak-el">🔥 0</span>
+        </div>
+        <button class="pp-back" onclick="goTo('intro')">← Grįžti</button>
+      </div>
+    </div>
+    <div class="pp-song-info">
+      <div style="flex:1">
+        <div class="pp-song-name" id="pp-song-name">Saulutė</div>
+        <div class="pp-song-meta" id="pp-song-meta">Pradedantysis · C pentatonika</div>
+        <div class="pp-progress-bar"><div class="pp-progress-fill" id="pp-progress" style="width:0%"></div></div>
+      </div>
+      <div class="pp-song-nav">
+        <button class="pp-btn" onclick="ppPrevSong()" style="padding:6px 12px">◀</button>
+        <button class="pp-btn" onclick="ppNextSong()" style="padding:6px 12px">▶</button>
+      </div>
+    </div>
+    <div class="pp-mode-switcher">
+      <button class="pp-mode-btn active" id="pp-mode-free" onclick="ppSetMode('free')">🎵 Laisvas</button>
+      <button class="pp-mode-btn" id="pp-mode-guided" onclick="ppSetMode('guided')">🎯 Vedlys</button>
+      <button class="pp-mode-btn" id="pp-mode-falling" onclick="ppSetMode('falling')">⬇ Kritančios natos</button>
+    </div>
+    <div id="pp-info-row" class="pp-info-row">Spausk bet kurį klavišą ir muzikuok laisvai!</div>
+    <div id="pp-falling-area" class="pp-falling-area" style="display:none"></div>
+    <div class="pp-feedback" id="pp-feedback">Pasirink režimą ir pradėk groti</div>
+    <div class="pp-piano-section">
+      <div class="pp-piano-wrap">
+        <div class="pp-piano" id="pp-piano"></div>
+      </div>
+      <div class="pp-legend">
+        <span><span class="pp-dot" style="background:#B5D4F4"></span>Spaudžiama</span>
+        <span><span class="pp-dot" style="background:#C0DD97"></span>Teisingai</span>
+        <span><span class="pp-dot" style="background:#F7C1C1"></span>Neteisingai</span>
+        <span><span class="pp-dot" style="background:#378ADD"></span>Reikalinga nota</span>
+      </div>
+    </div>
+    <div class="pp-controls">
+      <button class="pp-btn" onclick="ppRestartSong()">↺ Iš pradžių</button>
+      <button class="pp-btn primary" onclick="ppStartGuided()">▶ Pradėti vedlį</button>
+    </div>
+    <div class="pp-kb-hint">Klaviatūra: A S D F G H J K — baltieji klavišai | W E T Y U O — juodieji</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function goTo(page) {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('pq-app').style.display = 'none';
+  document.getElementById('pp-app').style.display = 'none';
+  if (page === 'intro') {
+    document.getElementById('intro').style.display = 'flex';
+    pqStopGame();
+  } else if (page === 'pq') {
+    document.getElementById('pq-app').style.display = 'flex';
+  } else if (page === 'pp') {
+    document.getElementById('pp-app').style.display = 'flex';
+  }
+}
+
+// ══════════════════════════════════════════════
+// PIANO QUEST
+// ══════════════════════════════════════════════
+const PQ_LIBRARY = [
+  {cat:'Vaikų dainos',title:'Žvaigždute žvaigždute',composer:'Tradicinė',diff:1,notes:['C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4','G4','G4','F4','F4','E4','E4','D4','G4','G4','F4','F4','E4','E4','D4','C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4']},
+  {cat:'Vaikų dainos',title:'Marija turėjo ėriuką',composer:'Tradicinė',diff:1,notes:['E4','D4','C4','D4','E4','E4','E4','D4','D4','D4','E4','G4','G4','E4','D4','C4','D4','E4','E4','E4','D4','D4','E4','D4','C4']},
+  {cat:'Vaikų dainos',title:'Happy Birthday',composer:'Tradicinė',diff:1,notes:['C4','C4','D4','C4','F4','E4','C4','C4','D4','C4','G4','F4','C4','C4','C5','A4','F4','E4','D4','B4','B4','A4','F4','G4','F4']},
+  {cat:'Vaikų dainos',title:'Baa Baa Black Sheep',composer:'Tradicinė',diff:1,notes:['C4','C4','G4','G4','A4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4','G4','G4','F4','F4','E4','E4','D4','G4','G4','F4','F4','E4','E4','D4','C4']},
+  {cat:'Vaikų dainos',title:'Hot Cross Buns',composer:'Tradicinė',diff:1,notes:['E4','D4','C4','E4','D4','C4','C4','C4','C4','D4','D4','D4','E4','D4','C4']},
+  {cat:'Vaikų dainos',title:'Row Row Row Your Boat',composer:'Tradicinė',diff:1,notes:['C4','C4','C4','D4','E4','E4','D4','E4','F4','G4','C5','C5','C5','G4','G4','G4','E4','E4','E4','C4','C4','C4','G4','F4','E4','D4','C4']},
+  {cat:'Vaikų dainos',title:'Old MacDonald',composer:'Tradicinė',diff:1,notes:['G4','G4','G4','D4','E4','E4','D4','B4','B4','A4','A4','G4','D4','G4','G4','G4','D4','E4','E4','D4','B4','B4','A4','A4','G4']},
+  {cat:'Vaikų dainos',title:'London Bridge',composer:'Tradicinė',diff:1,notes:['G4','A4','G4','F4','E4','F4','G4','D4','E4','F4','E4','F4','G4','G4','A4','G4','F4','E4','F4','G4','D4','G4','E4','C4']},
+  {cat:'Klasika',title:'Odė džiaugsmui',composer:'Beethoven',diff:1,notes:['E4','E4','F4','G4','G4','F4','E4','D4','C4','C4','D4','E4','E4','D4','D4','E4','E4','F4','G4','G4','F4','E4','D4','C4','C4','D4','E4','D4','C4','C4']},
+  {cat:'Klasika',title:'Fur Elise (tema)',composer:'Beethoven',diff:2,notes:['E5','D5','E5','D5','E5','B4','D5','C5','A4','C4','E4','A4','B4','E4','G4','B4','C5','E4','E5','D5','E5','D5','E5','B4','D5','C5','A4']},
+  {cat:'Klasika',title:'Minuetas G-dur',composer:'Bach',diff:2,notes:['G4','C5','D5','E5','F5','G5','F5','E5','D5','E5','F5','E5','D5','C5','B4','C5','D5','G4','G4','A4','B4','C5','D5','E5','D5','C5','B4','A4']},
+  {cat:'Klasika',title:'Can Can',composer:'Offenbach',diff:2,notes:['E4','E4','E4','C4','E4','D4','D4','D4','B4','D4','C4','E4','G4','G4','F4','E4','E4','D4','C4','E4','G4','G4','F4','E4','E4','D4','C4']},
+  {cat:'Klasika',title:'Ave Maria (tema)',composer:'Schubert',diff:2,notes:['C4','D4','F4','A4','F4','D4','C4','D4','E4','G4','E4','C4','B4','D4','F4','B4','F4','D4','C4','E4','G4','C5']},
+  {cat:'Klasika',title:'Greensleeves',composer:'Tradicinė',diff:2,notes:['A4','C5','D5','E5','G5','F5','E5','D5','B4','G4','A4','B4','C5','A4','A4','G4','F4','G4','A4','A4','G4','E4','A4','C5','D5','E5']},
+  {cat:'Klasika',title:'Spring (Pavasaris)',composer:'Vivaldi',diff:3,notes:['E5','E5','E5','E5','D5','C5','B4','A4','G4','A4','B4','C5','D5','E5','D5','C5','B4','A4','G4','A4','B4','C5','E5','E5','E5']},
+  {cat:'Klasika',title:'Largo (Žiema)',composer:'Vivaldi',diff:2,notes:['E4','D4','C4','B4','A4','G4','A4','B4','C5','B4','A4','G4','F4','G4','A4','G4','F4','E4']},
+  {cat:'Kalėdinės',title:'Jingle Bells',composer:'Tradicinė',diff:1,notes:['E4','E4','E4','E4','E4','E4','E4','G4','C4','D4','E4','F4','F4','F4','F4','F4','E4','E4','E4','E4','D4','D4','E4','D4','G4']},
+  {cat:'Kalėdinės',title:'Silent Night',composer:'Tradicinė',diff:1,notes:['G4','A4','G4','E4','G4','A4','G4','E4','D5','D5','B4','C5','C5','G4','A4','A4','C5','B4','A4','G4','A4','G4','E4']},
+  {cat:'Kalėdinės',title:'We Wish You a Merry Christmas',composer:'Tradicinė',diff:1,notes:['C4','F4','F4','G4','F4','E4','D4','D4','D4','G4','G4','A4','G4','F4','E4','C4','C4','A4','A4','B4','A4','G4','F4','D4','C4','C4','D4','G4','E4','F4']},
+  {cat:'Kalėdinės',title:'Joy to the World',composer:'Tradicinė',diff:1,notes:['C5','B4','A4','G4','F4','E4','D4','C4','G4','A4','C5','B4','A4','G4','A4','C5','B4','G4']},
+  {cat:'Kalėdinės',title:'O Christmas Tree',composer:'Tradicinė',diff:1,notes:['G4','C4','C4','C4','D4','E4','E4','D4','E4','F4','G4','G4','G4','G4','C4','C4','C4','E4','G4','G4','F4','D4','B4','B4','A4','F4','E4','C5','C5','B4','G4']},
+  {cat:'Kalėdinės',title:'Deck the Halls',composer:'Tradicinė',diff:1,notes:['C5','B4','A4','G4','A4','B4','C5','C5','D5','D5','C5','A4','C5','B4','A4','G4','D5','D5','C5','B4','A4','G4','A4','B4','C5','G4']},
+  {cat:'Pop & Filmai',title:'Tetris tema',composer:'Rusų liaudies',diff:1,notes:['E5','B4','C5','D5','C5','B4','A4','A4','C5','E5','D5','C5','B4','B4','C5','D5','E5','C5','A4','A4','D5','F5','A5','G5','F5','E5','C5','E5','D5','C5','B4']},
+  {cat:'Pop & Filmai',title:'Titanic (My Heart Will Go On)',composer:'Horner',diff:1,notes:['E4','F4','G4','F4','E4','D4','E4','F4','G4','A4','G4','F4','E4','F4','G4','F4','G4','A4','G4','F4','E4','D4','E4']},
+  {cat:'Pop & Filmai',title:'Harry Potter tema',composer:'Williams',diff:2,notes:['B4','E5','G5','F5','E5','B5','A5','F5','G5','E5','E5','G5','C5','B4','G4','F5','E5']},
+  {cat:'Pop & Filmai',title:'Game of Thrones',composer:'Djawadi',diff:2,notes:['G4','C4','E4','G4','C5','E5','G5','F5','C5','E5','F5','C5','F4','E4','G4','C4']},
+  {cat:'Pop & Filmai',title:'Interstellar (tema)',composer:'Zimmer',diff:2,notes:['C4','C4','C4','E4','C4','C4','C4','E4','G4','G4','A4','G4','E4','C4','C4','B4','A4','G4','E4','C4']},
+  {cat:'Pop & Filmai',title:'Amelie (Comptine)',composer:'Yann Tiersen',diff:2,notes:['C5','A4','C5','E5','A4','C5','A4','E4','G4','E5','G4','E4','D4','F4','A4','C5','D5','F5','E5','D5','C5','A4','C5','E5']},
+  {cat:'Liaudies',title:'Lietuva brangi',composer:'Tradicinė',diff:1,notes:['E4','G4','A4','G4','E4','C4','D4','E4','F4','E4','D4','C4','D4','E4','G4','A4','G4','E4','C4','D4','E4','G4','E4','D4','C4']},
+  {cat:'Liaudies',title:'Scarborough Fair',composer:'Tradicinė',diff:2,notes:['A4','G4','A4','C5','A4','G4','E4','G4','A4','G4','A4','C5','B4','A4','G4','A4','B4','C5','B4','A4','G4','F4','G4','A4']},
+  {cat:'Liaudies',title:'Danny Boy',composer:'Tradicinė',diff:2,notes:['G4','C5','C5','B4','C5','E5','D5','C5','C5','A4','G4','G4','A4','B4','C5','G4','G4','A4','G4','E4','G4','C5','C5','B4','C5']},
+  {cat:'Relax',title:'River Flows in You',composer:'Yiruma',diff:2,notes:['A4','B4','C5','E5','B4','A4','B4','C5','E5','G5','E5','B4','A4','B4','C5','E5','B4','A4','G4','A4','B4','D5','B4','G4']},
+  {cat:'Relax',title:'Experience',composer:'Einaudi',diff:2,notes:['B4','A4','G4','E4','B4','A4','G4','E4','D5','C5','B4','A4','G4','F4','E4','D4','E4','G4','A4','B4','C5','B4','A4','G4','E4']},
+  {cat:'Relax',title:'Clair de Lune (tema)',composer:'Debussy',diff:3,notes:['G4','F4','E4','D4','C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','E5','D5','C5','B4','A4','G4','F4','E4','D4','C4']},
+];
+
+const PQ_NOTES=[
+  {n:'C4',f:261.63},{n:'D4',f:293.66},{n:'E4',f:329.63},{n:'F4',f:349.23},
+  {n:'G4',f:392.00},{n:'A4',f:440.00},{n:'B4',f:493.88},{n:'C5',f:523.25},
+  {n:'D5',f:587.33},{n:'E5',f:659.25},{n:'F5',f:698.46},{n:'G5',f:783.99},{n:'A5',f:880.00},{n:'B5',f:987.77}
+];
+const PQ_SPOS={C4:6,D4:5,E4:4,F4:3,G4:2,A4:1,B4:0,C5:-1,D5:-2,E5:-3,F5:-4,G5:-5,A5:-6,B5:-7};
+const PQ_LBL={C4:'C',D4:'D',E4:'E',F4:'F',G4:'G',A4:'A',B4:'B',C5:'C₅',D5:'D₅',E5:'E₅',F5:'F₅',G5:'G₅',A5:'A₅',B5:'B₅'};
+
+let pqCurrentSong=PQ_LIBRARY[0];
+let pqNotes=pqCurrentSong.notes;
+let pqIdx=0,pqScore=0,pqStreak=0,pqTotal=0,pqHits=0;
+let pqRunning=false;
+let pqActx=null,pqAnalyser=null,pqSrcNode=null,pqMicStream=null,pqRafId=null;
+let pqLastNote=null,pqStable=0,pqLastAccepted=0;
+const PQ_VOTE_LEN=16;
+let pqVoteBuffer=[];
+
+function pqBuildLibrary(filter=''){
+  const body=document.getElementById('pq-lib-body');body.innerHTML='';
+  const cats={};
+  for(const s of PQ_LIBRARY){
+    const t=(s.title+' '+s.composer).toLowerCase();
+    if(filter&&!t.includes(filter.toLowerCase()))continue;
+    if(!cats[s.cat])cats[s.cat]=[];cats[s.cat].push(s);
+  }
+  for(const[cat,songs]of Object.entries(cats)){
+    const ch=document.createElement('div');ch.className='pq-cat';ch.textContent=cat;body.appendChild(ch);
+    for(const s of songs){
+      const d=document.createElement('div');
+      d.className='pq-song'+(s===pqCurrentSong?' active':'');
+      const dl=['','Lengva','Vidutinis','Sunku'][s.diff];
+      const dc=['','diff-1','diff-2','diff-3'][s.diff];
+      d.innerHTML=`<span class="pq-song-title">${s.title}</span><span class="pq-song-sub">${s.composer}</span><span class="pq-song-diff ${dc}">${dl}</span>`;
+      d.onclick=()=>pqSelectSong(s);body.appendChild(d);
+    }
+  }
+}
+function pqSelectSong(s){
+  pqCurrentSong=s;pqNotes=s.notes;
+  document.getElementById('pq-selected-song').textContent=s.title+' — '+s.composer;
+  pqBuildLibrary(document.getElementById('pq-search').value);
+  pqResetGame();
+}
+function pqFilterSongs(){pqBuildLibrary(document.getElementById('pq-search').value);}
+function pqResetGame(){
+  pqIdx=0;pqScore=0;pqStreak=0;pqTotal=0;pqHits=0;
+  pqSet('pq-vsc','0');pqSet('pq-vst','0');pqSet('pq-vac','—');pqSet('pq-vpr','0%');
+  pqSetFB('Laukiama...','');pqUpdateNxt();pqDrawStaff();
+}
+function pqSet(id,v){document.getElementById(id).textContent=v;}
+function pqSetFB(t,c){const e=document.getElementById('pq-fb');e.textContent=t;e.className='pq-fb'+(c?' '+c:'');}
+
+function pqDrawStaff(){
+  const cv=document.getElementById('pq-staff'),con=cv.parentElement;
+  const N=pqNotes.length,SPC=36,CLEF=52;
+  const W=Math.max(con.clientWidth-28,CLEF+N*SPC+40);
+  cv.width=W;
+  const hasHigh=pqNotes.some(n=>PQ_SPOS[n]!==undefined&&PQ_SPOS[n]<-3);
+  cv.height=hasHigh?190:160;
+  const c=cv.getContext('2d');c.clearRect(0,0,W,cv.height);
+  const TOP=hasHigh?55:38,LG=14,NR=6,LEFT=CLEF+6;
+  c.strokeStyle='#2e2e4a';c.lineWidth=1;
+  for(let i=0;i<5;i++){c.beginPath();c.moveTo(6,TOP+i*LG);c.lineTo(W-6,TOP+i*LG);c.stroke();}
+  c.fillStyle='#555070';c.font='56px serif';c.fillText('𝄞',4,TOP+4*LG+8);
+  for(let i=0;i<N;i++){
+    const n=pqNotes[i],pos=PQ_SPOS[n];if(pos===undefined)continue;
+    const x=LEFT+i*SPC+SPC/2,y=TOP+pos*(LG/2);
+    const col=i<pqIdx?'#252540':i===pqIdx?'#8b7cf6':'#4a4870';
+    if(i===pqIdx){c.beginPath();c.arc(x,y,NR+6,0,Math.PI*2);c.fillStyle='rgba(139,124,246,0.12)';c.fill();}
+    c.fillStyle=col;c.beginPath();c.ellipse(x,y,NR,NR*0.7,-0.3,0,Math.PI*2);c.fill();
+    if(pos>=6){c.strokeStyle='#2e2e4a';c.lineWidth=1;c.beginPath();c.moveTo(x-9,TOP+6*(LG/2));c.lineTo(x+9,TOP+6*(LG/2));c.stroke();}
+    if(pos<=-6){c.strokeStyle='#2e2e4a';c.lineWidth=1;for(let lp=-6;lp>=pos;lp-=2){c.beginPath();c.moveTo(x-9,TOP+lp*(LG/2));c.lineTo(x+9,TOP+lp*(LG/2));c.stroke();}}
+    c.strokeStyle=col;c.lineWidth=1.3;
+    const sd=pos<0?1:-1;
+    c.beginPath();c.moveTo(x+NR-1,y);c.lineTo(x+NR-1,y+sd*30);c.stroke();
+    if(i===pqIdx){c.fillStyle='#8b7cf6';c.font='bold 10px monospace';c.textAlign='center';c.fillText(PQ_LBL[n]||n,x,pos>=0?y+NR+14:y-NR-6);}
+  }
+  const sc=LEFT+pqIdx*SPC-con.clientWidth*0.35;if(sc>0)con.scrollLeft=sc;
+}
+function pqUpdateNxt(){
+  document.getElementById('pq-nxt').innerHTML=pqIdx<pqNotes.length?'Groki: <b>'+(PQ_LBL[pqNotes[pqIdx]]||pqNotes[pqIdx])+'</b>':'';
+}
+
+const PQ_MPM_THRESHOLD=0.65;
+function pqMpmPitch(buf,sr){
+  const N=buf.length;let rms=0;
+  for(let i=0;i<N;i++)rms+=buf[i]*buf[i];
+  rms=Math.sqrt(rms/N);if(rms<0.003)return{freq:-1,rms};
+  const MAXLAG=Math.floor(sr/180),MINLAG=Math.floor(sr/950);
+  const nsdf=new Float32Array(MAXLAG+1);
+  for(let tau=MINLAG;tau<=MAXLAG;tau++){
+    let acf=0,sq=0;
+    for(let j=0;j<N-tau;j++){acf+=buf[j]*buf[j+tau];sq+=buf[j]*buf[j]+buf[j+tau]*buf[j+tau];}
+    nsdf[tau]=sq>0?(2*acf)/sq:0;
+  }
+  let bestTau=-1,bestVal=-1,t=MINLAG;
+  while(t<=MAXLAG){
+    while(t<=MAXLAG&&nsdf[t]<=0)t++;
+    let pT=t,pV=t<=MAXLAG?nsdf[t]:0;
+    while(t<=MAXLAG&&nsdf[t]>=0){if(nsdf[t]>pV){pV=nsdf[t];pT=t;}t++;}
+    if(pV>PQ_MPM_THRESHOLD&&pV>bestVal){bestVal=pV;bestTau=pT;}
+  }
+  if(bestTau<1)return{freq:-1,rms};
+  let tau=bestTau;
+  if(bestTau>MINLAG&&bestTau<MAXLAG){
+    const y1=nsdf[bestTau-1],y2=nsdf[bestTau],y3=nsdf[bestTau+1];
+    const d=y1-2*y2+y3;if(d!==0)tau=bestTau-(y3-y1)/(2*d);
+  }
+  return{freq:sr/tau,rms};
+}
+function pqFreqToNote(freq){
+  if(freq<170||freq>1000)return null;
+  let best=null,minC=999;
+  for(const{n,f}of PQ_NOTES){const c=Math.abs(1200*Math.log2(freq/f));if(c<minC){minC=c;best=n;}}
+  return minC<75?best:null;
+}
+
+let pqTdBuf=null;
+async function pqStartGame(){
+  if(pqRunning){pqStopGame();return;}
+  document.getElementById('pq-erbox').style.display='none';
+  const btn=document.getElementById('pq-start-btn');btn.disabled=true;
+  try{
+    pqMicStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    pqActx=new(window.AudioContext||window.webkitAudioContext)();
+    if(pqActx.state==='suspended')await pqActx.resume();
+    pqAnalyser=pqActx.createAnalyser();pqAnalyser.fftSize=8192;pqAnalyser.smoothingTimeConstant=0;
+    pqTdBuf=new Float32Array(8192);
+    pqSrcNode=pqActx.createMediaStreamSource(pqMicStream);pqSrcNode.connect(pqAnalyser);
+    pqRunning=true;btn.disabled=false;btn.textContent='⏹ Sustabdyti';btn.classList.add('running');
+    document.getElementById('pq-sm').textContent='Klausoma — groki aiškiai';
+    document.getElementById('pq-ss').textContent=pqCurrentSong.title+' — '+pqCurrentSong.composer;
+    pqLastNote=null;pqStable=0;pqLastAccepted=0;pqVoteBuffer=[];
+    pqLoop();
+  }catch(e){
+    btn.disabled=false;
+    const box=document.getElementById('pq-erbox');box.style.display='block';
+    box.textContent=e.name==='NotAllowedError'?'⚠ Mikrofonas uždraustas. Leisk prieigą naršyklės adreso juostoje.':'⚠ Klaida: '+e.message;
+  }
+}
+function pqStopGame(){
+  pqRunning=false;if(pqRafId)cancelAnimationFrame(pqRafId);
+  if(pqSrcNode){pqSrcNode.disconnect();pqSrcNode=null;}
+  if(pqActx){pqActx.close();pqActx=null;}
+  if(pqMicStream){pqMicStream.getTracks().forEach(t=>t.stop());pqMicStream=null;}
+  const btn=document.getElementById('pq-start-btn');
+  btn.textContent='▶ Pradėti';btn.classList.remove('running');
+  document.getElementById('pq-sm').textContent='Sustabdyta';
+  document.getElementById('pq-det').textContent='—';
+  document.getElementById('pq-vol-inner').style.width='0%';
+  document.getElementById('pq-freq-txt').textContent='';
+}
+function pqLoop(){
+  if(!pqRunning)return;
+  pqAnalyser.getFloatTimeDomainData(pqTdBuf);
+  const{freq,rms}=pqMpmPitch(pqTdBuf,pqActx.sampleRate);
+  const rawNote=freq>0?pqFreqToNote(freq):null;
+  const volPct=Math.min(100,rms*2000);
+  const vi=document.getElementById('pq-vol-inner');vi.style.width=volPct+'%';vi.className=volPct<8?'low':'';
+  pqVoteBuffer.push(rawNote);if(pqVoteBuffer.length>PQ_VOTE_LEN)pqVoteBuffer.shift();
+  const counts={};for(const n of pqVoteBuffer)if(n)counts[n]=(counts[n]||0)+1;
+  let topNote=null,topCount=0;
+  for(const[n,c]of Object.entries(counts))if(c>topCount){topCount=c;topNote=n;}
+  const smoothed=topCount>=Math.ceil(PQ_VOTE_LEN*0.55)?topNote:null;
+  pqSet('pq-d-freq',freq>0?Math.round(freq):'—');pqSet('pq-d-note',smoothed||rawNote||'—');pqSet('pq-d-rms',rms.toFixed(4));pqSet('pq-d-stab',pqStable);
+  document.getElementById('pq-det').textContent=smoothed?(PQ_LBL[smoothed]||smoothed):(rawNote?(PQ_LBL[rawNote]||rawNote):'—');
+  document.getElementById('pq-freq-txt').textContent=freq>0?Math.round(freq)+' Hz':'';
+  if(smoothed&&smoothed===pqLastNote)pqStable++;else{pqStable=0;pqLastNote=smoothed;}
+  const now=Date.now();
+  if(pqStable===12&&now-pqLastAccepted>900){pqLastAccepted=now;pqStable=0;pqVoteBuffer=[];pqEvaluate(smoothed);}
+  pqRafId=requestAnimationFrame(pqLoop);
+}
+function pqEvaluate(played){
+  if(pqIdx>=pqNotes.length)return;
+  const exp=pqNotes[pqIdx];pqTotal++;
+  if(played===exp){
+    pqHits++;pqStreak++;pqScore+=10+Math.min(pqStreak,10)*2;pqIdx++;
+    pqSetFB(pqStreak>=5?`Fenomenalu! ${pqStreak} iš eilės!`:pqStreak>=3?`Šauniai! ${pqStreak} iš eilės`:'Teisingai! ✓','ok');
+    pqSet('pq-vsc',pqScore);pqSet('pq-vst',pqStreak);pqSet('pq-vpr',Math.round(pqIdx/pqNotes.length*100)+'%');
+    pqDrawStaff();pqUpdateNxt();
+    if(pqIdx>=pqNotes.length){setTimeout(()=>{const acc=Math.round(pqHits/pqTotal*100);pqSetFB(`🎉 Baigta! Taškai: ${pqScore} · Tikslumas: ${acc}%`,'win');document.getElementById('pq-nxt').innerHTML='';pqStopGame();},500);return;}
+  }else if(played){pqStreak=0;pqSetFB(`Neteisinga: ${PQ_LBL[played]||played} — reikia: ${PQ_LBL[exp]||exp}`,'err');pqSet('pq-vst','0');}
+  pqSet('pq-vac',pqTotal>0?Math.round(pqHits/pqTotal*100)+'%':'—');
+  setTimeout(()=>{if(pqIdx<pqNotes.length)pqSetFB('Laukiama...','');},1300);
+}
+
+// ══════════════════════════════════════════════
+// PIANO PLAY
+// ══════════════════════════════════════════════
+const PP_NOTES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const PP_BLACK=['C#','D#','F#','G#','A#'];
+const PP_SONGS=[
+  {name:'Saulutė',meta:'Pradedantysis · C pentatonika',notes:['C4','E4','G4','E4','C4','D4','E4','G4','A4','G4','E4','C4']},
+  {name:'Odė džiaugsmui',meta:'Pradedantysis · Bethovenas',notes:['E4','E4','F4','G4','G4','F4','E4','D4','C4','C4','D4','E4','E4','D4','D4']},
+  {name:'Žvaigždute žvaigždute',meta:'Pradedantysis · Tradicinė',notes:['C4','C4','G4','G4','A4','A4','G4','F4','F4','E4','E4','D4','D4','C4']},
+  {name:'Jingle Bells',meta:'Pradedantysis · Kalėdinė',notes:['E4','E4','E4','E4','E4','E4','E4','G4','C4','D4','E4','F4','F4','F4','F4','F4','E4','E4','E4','E4','D4','D4','E4','D4','G4']},
+  {name:'Happy Birthday',meta:'Pradedantysis · Tradicinė',notes:['C4','C4','D4','C4','F4','E4','C4','C4','D4','C4','G4','F4','C4','C4','C5','A4','F4','E4','D4']},
+  {name:'Hot Cross Buns',meta:'Pradedantysis · Tradicinė',notes:['E4','D4','C4','E4','D4','C4','C4','C4','C4','D4','D4','D4','E4','D4','C4']},
+  {name:'Silent Night',meta:'Pradedantysis · Kalėdinė',notes:['G4','A4','G4','E4','G4','A4','G4','E4','D5','D5','B4','C5','C5','G4','A4','A4','C5','B4','A4','G4']},
+  {name:'Titanic tema',meta:'Vidutinis · Horner',notes:['E4','F4','G4','F4','E4','D4','E4','F4','G4','A4','G4','F4','E4','F4','G4','F4','G4','A4','G4','F4','E4','D4','E4']},
+  {name:'Laimė',meta:'Vidutinis · Pentatonika',notes:['A4','G4','E4','D4','C4','E4','G4','A4','G4','E4','A4','C5','B4','A4','G4','E4']},
+];
+const PP_KB={'a':'C4','w':'C#4','s':'D4','e':'D#4','d':'E4','f':'F4','t':'F#4','g':'G4','y':'G#4','h':'A4','u':'A#4','j':'B4','k':'C5','o':'C#5','l':'D5'};
+
+let ppKeys=[],ppSongIdx=0,ppNoteIdx=0,ppScore=0,ppStreak=0,ppMode='free';
+let ppFallingInterval=null,ppFallingNotes=[],ppFallingTick=0;
+let ppAudioCtx;
+
+function ppNoteFreq(n){
+  const note=n.slice(0,-1),oct=+n.slice(-1);
+  return 440*Math.pow(2,(PP_NOTES.indexOf(note)-9+(oct-4)*12)/12);
+}
+function ppPlayNote(n){
+  if(!ppAudioCtx)ppAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const osc=ppAudioCtx.createOscillator(),gain=ppAudioCtx.createGain();
+  osc.connect(gain);gain.connect(ppAudioCtx.destination);
+  osc.type='triangle';osc.frequency.value=ppNoteFreq(n);
+  gain.gain.setValueAtTime(0.45,ppAudioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,ppAudioCtx.currentTime+1.4);
+  osc.start();osc.stop(ppAudioCtx.currentTime+1.4);
+}
+
+function ppBuildPiano(){
+  const piano=document.getElementById('pp-piano');piano.innerHTML='';ppKeys=[];
+  [4,5].forEach(oct=>{
+    PP_NOTES.forEach(n=>{
+      const full=n+oct,isBlack=PP_BLACK.includes(n);
+      const div=document.createElement('div');
+      div.className='pp-key '+(isBlack?'black':'white');
+      div.dataset.note=full;
+      const label=document.createElement('div');label.className='pp-key-label';label.textContent=n+(oct===5?'⁵':'');
+      div.appendChild(label);
+      div.addEventListener('mousedown',()=>ppPressKey(full));
+      div.addEventListener('touchstart',e=>{e.preventDefault();ppPressKey(full)},{passive:false});
+      piano.appendChild(div);ppKeys.push({note:full,el:div,isBlack});
+    });
+  });
+}
+function ppGetEl(note){return ppKeys.find(k=>k.note===note)?.el;}
+function ppFlashKey(note,cls,dur=500){const el=ppGetEl(note);if(!el)return;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),dur);}
+function ppPressKey(note){
+  ppPlayNote(note);
+  const el=ppGetEl(note);if(el){el.classList.add('pressed');setTimeout(()=>el.classList.remove('pressed'),300);}
+  if(ppMode==='guided')ppCheckGuided(note);
+  else if(ppMode==='falling')ppCheckFalling(note);
+}
+function ppCheckGuided(note){
+  const song=PP_SONGS[ppSongIdx],target=song.notes[ppNoteIdx];
+  if(note===target){
+    const pts=10+ppStreak*2;ppScore+=pts;ppStreak++;
+    ppFlashKey(note,'correct');ppSetFeedback('✓ Teisingai! +'+pts,'ok');
+    ppClearHint();ppNoteIdx++;ppUpdateProgress();
+    if(ppNoteIdx>=song.notes.length){ppScore+=50;ppUpdateStats();setTimeout(()=>{ppSetFeedback('🎉 Daina baigta! +50 bonus','ok');ppNoteIdx=0;ppUpdateProgress();ppShowHint();},450);}
+    else setTimeout(ppShowHint,180);
+  }else{ppStreak=0;ppFlashKey(note,'wrong');ppSetFeedback('✗ Ne ta nota – pabandyk dar!','bad');}
+  ppUpdateStats();
+}
+function ppSetFeedback(msg,cls){const el=document.getElementById('pp-feedback');el.textContent=msg;el.className='pp-feedback '+(cls||'');}
+function ppClearHint(){ppKeys.forEach(k=>{const h=k.el.querySelector('.pp-note-hint');if(h)h.remove();});}
+function ppShowHint(){
+  ppClearHint();if(ppMode!=='guided')return;
+  const song=PP_SONGS[ppSongIdx];if(ppNoteIdx>=song.notes.length)return;
+  const target=song.notes[ppNoteIdx],el=ppGetEl(target);if(!el)return;
+  const hint=document.createElement('div');hint.className='pp-note-hint';hint.textContent=target.slice(0,-1);
+  el.style.position='relative';el.appendChild(hint);
+}
+function ppUpdateStats(){document.getElementById('pp-score').textContent=ppScore;document.getElementById('pp-streak-el').textContent='🔥 '+ppStreak;}
+function ppUpdateProgress(){const song=PP_SONGS[ppSongIdx];document.getElementById('pp-progress').style.width=((ppNoteIdx/song.notes.length)*100)+'%';}
+function ppRestartSong(){ppNoteIdx=0;ppUpdateProgress();ppClearHint();if(ppMode==='guided')ppShowHint();ppSetFeedback('↺ Pradedame iš naujo!','');}
+function ppStartGuided(){ppSetMode('guided');ppRestartSong();ppShowHint();ppSetFeedback('Spausk mėlynai pažymėtą klavišą!','');}
+function ppSetMode(m){
+  ppMode=m;
+  ['free','guided','falling'].forEach(x=>{document.getElementById('pp-mode-'+x).classList.toggle('active',x===m);});
+  ppClearHint();ppStopFalling();
+  const fa=document.getElementById('pp-falling-area'),ir=document.getElementById('pp-info-row');
+  if(m==='free'){fa.style.display='none';ir.textContent='Laisvas režimas: spausk bet ką ir tyrinėk garsus!';ppSetFeedback('Muzikuok laisvai 🎵','');}
+  else if(m==='guided'){fa.style.display='none';ir.textContent='Vedlys: spausk mėlynai pažymėtą klavišą laiku';ppShowHint();ppSetFeedback('Spausk mėlyną klavišą!','');}
+  else{fa.style.display='block';ir.textContent='Kritančios natos: sugauk jas kai jos pasiekia apačią!';ppStartFalling();ppSetFeedback('Pasiruošk...','');}
+}
+function ppStartFalling(){
+  ppStopFalling();ppFallingNotes=[];ppFallingTick=0;
+  const area=document.getElementById('pp-falling-area');area.innerHTML='';
+  const song=PP_SONGS[ppSongIdx];let qi=0;
+  ppFallingInterval=setInterval(()=>{
+    ppFallingTick++;
+    if(ppFallingTick%22===0&&qi<song.notes.length){
+      const note=song.notes[qi++];const keyEl=ppGetEl(note);if(!keyEl)return;
+      const piano=document.getElementById('pp-piano');
+      const pRect=piano.getBoundingClientRect(),kRect=keyEl.getBoundingClientRect(),aRect=area.getBoundingClientRect();
+      const isBlack=PP_BLACK.includes(note.slice(0,-1));
+      const fn=document.createElement('div');fn.className='pp-fn'+(isBlack?' black-fn':'');fn.textContent=note.slice(0,-1);
+      const leftOffset=kRect.left-pRect.left+(area.scrollLeft||0);
+      fn.style.left=Math.max(0,leftOffset)+'px';fn.style.top='-32px';fn.style.width=(isBlack?26:42)+'px';fn.style.height='28px';
+      fn._top=-32;fn._note=note;fn._hit=false;area.appendChild(fn);ppFallingNotes.push(fn);
+    }
+    ppFallingNotes.forEach(fn=>{if(fn._hit)return;fn._top+=1.6;fn.style.top=fn._top+'px';if(fn._top>115){fn._hit=true;fn.style.opacity='0.15';}});
+    ppFallingNotes=ppFallingNotes.filter(fn=>fn._top<140);
+  },28);
+}
+function ppStopFalling(){if(ppFallingInterval){clearInterval(ppFallingInterval);ppFallingInterval=null;}}
+function ppCheckFalling(note){
+  const match=ppFallingNotes.find(fn=>!fn._hit&&fn._note===note&&fn._top>55&&fn._top<108);
+  if(match){match._hit=true;match.classList.add('hit');setTimeout(()=>{try{match.remove()}catch(e){}},300);ppScore+=15;ppStreak++;ppSetFeedback('✓ Sugauta! +15','ok');}
+  else{ppStreak=0;ppSetFeedback('✗ Pernelyg anksti arba per vėlai','bad');}
+  ppUpdateStats();
+}
+function ppNextSong(){ppSongIdx=(ppSongIdx+1)%PP_SONGS.length;ppLoadSong();}
+function ppPrevSong(){ppSongIdx=(ppSongIdx-1+PP_SONGS.length)%PP_SONGS.length;ppLoadSong();}
+function ppLoadSong(){
+  const s=PP_SONGS[ppSongIdx];
+  document.getElementById('pp-song-name').textContent=s.name;
+  document.getElementById('pp-song-meta').textContent=s.meta;
+  ppNoteIdx=0;ppUpdateProgress();ppClearHint();
+  if(ppMode==='guided')ppShowHint();
+  if(ppMode==='falling'){ppStopFalling();ppStartFalling();}
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.repeat||e.ctrlKey||e.metaKey)return;
+  const note=PP_KB[e.key.toLowerCase()];
+  if(note&&document.getElementById('pp-app').style.display!=='none'){ppPressKey(note);const el=ppGetEl(note);if(el)el.classList.add('pressed');}
+});
+document.addEventListener('keyup',e=>{
+  const note=PP_KB[e.key.toLowerCase()];
+  if(note){const el=ppGetEl(note);if(el)el.classList.remove('pressed');}
+});
+
+// ── Init ──────────────────────────────────────────────────────────────
+pqSelectSong(PQ_LIBRARY[0]);
+ppBuildPiano();
+window.addEventListener('resize',()=>{if(document.getElementById('pq-app').style.display!=='none')pqDrawStaff();});
+</script>
+</body>
+</html>
